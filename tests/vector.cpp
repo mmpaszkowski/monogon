@@ -255,6 +255,17 @@ TEST(vector, transposition)
     GTEST_ASSERT_EQ(v1.transpose()==C, true);
 }
 
+TEST(vector, dot_vector)
+{
+    Vector v1 = {1.0, 2.0, 3.0, 4.0};
+
+    Vector v2 = {1.0, 2.0, 3.0, 4.0};
+
+    double c = 30.0;
+
+    GTEST_ASSERT_EQ(v1.dot(v2)==c, true);
+}
+
 TEST(vector, dot_matrix)
 {
     Vector v1 = {1.0, 2.0, 3.0, 4.0};

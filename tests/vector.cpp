@@ -259,9 +259,12 @@ TEST(vector, dot_matrix)
 {
     Vector v1 = {1.0, 2.0, 3.0, 4.0};
 
-    Vector v2 = {1.0, 2.0, 3.0, 4.0};
+    Matrix v2 = {{1.0, 2.0, 3.0, 4.0}};
 
-    double c = 30.0;
+    Matrix c = {{1.0, 2.0, 3.0, 4.0},
+                {2.0, 4.0, 6.0, 8.0},
+                {3.0, 6.0, 9.0, 12.0},
+                {4.0, 8.0, 12.0, 16.0}};
 
     GTEST_ASSERT_EQ(v1.dot(v2)==c, true);
 }
@@ -269,8 +272,13 @@ TEST(vector, dot_matrix)
 TEST(vector, avg)
 {
     Vector A = {
-        {1.0, 2.0, 3.0, 4.0}
+            {1.0, 2.0, 3.0, 4.0}
     };
 
     GTEST_ASSERT_EQ(A.avg() == 2.5, true);
+}
+
+TEST(vector, printout)
+{
+    std::cout << Vector{1.0, 2.0, 3.0, 4.0};
 }

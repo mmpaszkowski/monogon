@@ -286,7 +286,7 @@ template <typename T> auto Vector<T>::avg() const
     for(const auto& item : data)
         sum += item;
 
-    return sum/data.size();
+    return sum/static_cast<T>(data.size());
 }
 
 //----------------------------------------------------- Accessors ------------------------------------------------------

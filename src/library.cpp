@@ -1,7 +1,5 @@
-#include "../include/cpp_static_lib_template/library.h"
-
+#include "config.h"
 #include <fmt/color.h>
-#include <monogon/config.h>
 
 namespace monogon
 {

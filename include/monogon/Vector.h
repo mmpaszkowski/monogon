@@ -13,30 +13,23 @@ template <typename T> class Matrix;
 
 template <typename T> class Vector
 {
-  public:
+public:
     using value_type             = T;
     using size_type              = std::size_t;
 
     constexpr explicit Vector(size_t size);
     constexpr explicit Vector(size_t size, const T &value);
-    constexpr Vector(std::initializer_list<value_type> list);
-
-    constexpr Vector(const Vector& v);
-    constexpr Vector(Vector && v) noexcept;
-
+    constexpr          Vector(std::initializer_list<value_type> list);
+    constexpr          Vector(const Vector& v);
+    constexpr          Vector(Vector && v) noexcept;
+    constexpr          Vector& operator=(const Vector& x);
+    constexpr          Vector& operator=(Vector&& x) noexcept;
+    constexpr          ~Vector();
     template <template <typename...> class Container> constexpr explicit Vector(Container<value_type> container);
 
-    constexpr ~Vector();
-
-    constexpr Vector& operator=(const Vector& x);
-    constexpr Vector& operator=(Vector&& x) noexcept;
-
-
 public:
-    constexpr value_type & operator()(std::size_t index);
+    constexpr       value_type & operator()(std::size_t index);
     constexpr const value_type & operator()(std::size_t index) const;
-
-    auto operator-() const;
 
     template <typename U> auto operator+(const Vector<U> &rhs) const;
     template <typename U> auto operator-(const Vector<U> &rhs) const;
@@ -54,18 +47,17 @@ public:
     template <typename U> auto operator/(const U &val) const;
 
     template <typename U> bool operator==(const Vector<U> &rhs) const;
+    auto operator-() const;
 
     Matrix<T> transpose() const;
+    auto avg() const;
 
     template <typename U> auto dot(const Vector<U> &rhs) const;
     template <typename U> auto dot(const Matrix<U> &rhs) const;
 
-    auto avg() const;
-
   public:
     const std::valarray<value_type> &get_data() const;
-
-    size_type size() const;
+    size_type                        size()     const;
 
   private:
     std::valarray<value_type> data;
@@ -95,13 +87,11 @@ template <typename T> constexpr Vector<T>::Vector(std::initializer_list<T> list)
 template<typename T>
 constexpr Vector<T>::Vector(const Vector &v) : data(v.data)
 {
-
 }
 
 template<typename T>
 constexpr Vector<T>::Vector(Vector &&v) noexcept : data(std::move(v.data))
 {
-
 }
 
 template <typename T> template <template <typename...> class Container> constexpr Vector<T>::Vector(Container<T> container)
@@ -115,7 +105,6 @@ template <typename T> template <template <typename...> class Container> constexp
 template<typename T>
 constexpr Vector<T>::~Vector()
 {
-
 }
 
 template<typename T>
@@ -351,8 +340,5 @@ std::ostream& operator<<(std::ostream& os, const Vector<T>& vector)
     os << "]" << std::endl;
     return os;
 }
-
-
-
 
 #endif //MONOGON_VECTOR_H

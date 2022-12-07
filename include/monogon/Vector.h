@@ -13,7 +13,7 @@ template <typename T> class Matrix;
 
 template <typename T> class Vector
 {
-public:
+  public:
     using value_type             = T;
     using size_type              = std::size_t;
 
@@ -24,10 +24,10 @@ public:
     constexpr          Vector(Vector && v) noexcept;
     constexpr          Vector& operator=(const Vector& x);
     constexpr          Vector& operator=(Vector&& x) noexcept;
-    constexpr          ~Vector();
+              ~Vector();
     template <template <typename...> class Container> constexpr explicit Vector(Container<value_type> container);
 
-public:
+  public:
     constexpr       value_type & operator()(std::size_t index);
     constexpr const value_type & operator()(std::size_t index) const;
 
@@ -61,6 +61,7 @@ public:
 
   private:
     std::valarray<value_type> data;
+
   public:
     template <typename U> friend std::ostream& operator<<(std::ostream& os, const Vector<U>& variable);
 };
@@ -103,7 +104,7 @@ template <typename T> template <template <typename...> class Container> constexp
 }
 
 template<typename T>
-constexpr Vector<T>::~Vector()
+ Vector<T>::~Vector()
 {
 }
 

@@ -1,5 +1,12 @@
 set(TEST_MAIN ${MONOGON_PROJECT_NAME}_unit_tests)
-set(TEST_SOURCES vector.cpp)
+set(TEST_SOURCES
+    vector.cpp
+    matrix.cpp
+    tensor.cpp
+    variable.cpp
+    layer.cpp
+    loss.cpp
+    model.cpp)
 
 FetchContent_Declare(
         googletest

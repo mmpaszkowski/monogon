@@ -1,10 +1,16 @@
 # SOURCES AND HEADERS
 set(LIBRARY_SOURCES
-    library.cpp)
+    Shape.cpp
+    Index.cpp)
 
 set(LIBRARY_HEADERS
+    ../include/monogon/tool/Shape.h
+    ../include/monogon/tool/Index.h
     ../include/monogon/Vector.h
-    ../include/monogon/Matrix.h)
+    ../include/monogon/Matrix.h
+    ../include/monogon/Tensor.h
+    ../include/monogon/Operation.h
+    ../include/monogon/Variable.h)
 
 set(LIBRARY_INCLUDES
     ../include

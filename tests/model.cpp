@@ -9,7 +9,7 @@
 TEST(model, model)
 {
     Matrix x = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
-    Matrix y = {{0.0}, {0.0}, {0.0}, {1.0}};
+    Matrix y = {{0.0, 0.0, 0.0}, {0.0, 1.0, 1.0}, {0.0, 1.0, 1.0}, {1.0, 1.0, 0.0}};
 
     ReLu relu;
     Sigmoid sigmoid;
@@ -19,11 +19,11 @@ TEST(model, model)
     Activation activation1(relu, dense1);
     Dense dense2({120}, activation1);
     Activation activation2(relu, dense2);
-    Dense dense3({1}, activation2);
+    Dense dense3({3}, activation2);
     Activation activation3(sigmoid, dense3);
 
     Model model(dense1, activation3);
     model.compile(SGD(1.0), MSE());
-    model.fit(x, y, 100);
-//    std::cout << model.predict(x);
+    model.fit(x, y, 1000);
+    std::cout << model.predict(x);
 }

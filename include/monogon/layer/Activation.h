@@ -7,6 +7,7 @@
 
 #include "../Matrix.h"
 #include "Layer.h"
+#include "../activation/ActivationFunction.h"
 
 #include <vector>
 

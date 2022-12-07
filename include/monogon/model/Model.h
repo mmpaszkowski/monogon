@@ -58,11 +58,11 @@ template <typename T> void Model<T>::fit(Matrix<T> x, Matrix<T> y, size_t epochs
         loss.zero_grad();
         auto finish = std::chrono::high_resolution_clock::now();
 
-//        std::cout << "Epoch " << i + 1 << "/" << epochs << " - "
-//                  << std::chrono::duration_cast<std::chrono::seconds>((finish - start)) % 1000 << " "
-//                  << std::chrono::duration_cast<std::chrono::milliseconds>((finish - start)) % 1000 << " "
-//                  << std::chrono::duration_cast<std::chrono::microseconds>((finish - start)) % 1000
-//                  << " / step - loss: " << loss.get_value() << std::endl;
+        std::cout << "Epoch " << i + 1 << "/" << epochs << " - "
+                  << std::chrono::duration_cast<std::chrono::seconds>((finish - start)) % 1000 << " "
+                  << std::chrono::duration_cast<std::chrono::milliseconds>((finish - start)) % 1000 << " "
+                  << std::chrono::duration_cast<std::chrono::microseconds>((finish - start)) % 1000
+                  << " / step - loss: " << loss.get_value() << std::endl;
     }
 }
 

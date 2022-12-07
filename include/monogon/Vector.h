@@ -286,7 +286,7 @@ template <typename T> template <typename U> auto Vector<T>::operator/(const U &v
     Vector<result_val_type> result(this->size());
     for(size_type i = 0; i < this->size(); i++)
     {
-        result[i] = this->data[i] / val;
+        result(i) = this->data[i] / val;
     }
     return result;
 }

@@ -19,13 +19,16 @@ template <typename T> class Vector
 
     constexpr explicit Vector(size_t size);
     constexpr explicit Vector(size_t size, const T &value);
+    constexpr explicit Vector(const std::valarray<T>& data);
+    constexpr explicit Vector(std::valarray<T>&& data);
     constexpr          Vector(std::initializer_list<value_type> list);
     constexpr          Vector(const Vector& v);
     constexpr          Vector(Vector && v) noexcept;
     constexpr          Vector& operator=(const Vector& x);
     constexpr          Vector& operator=(Vector&& x) noexcept;
-              ~Vector();
-    template <template <typename...> class Container> constexpr explicit Vector(Container<value_type> container);
+    ~Vector();
+    template <template <typename...> class Container> constexpr explicit Vector(const Container<value_type>& container);
+    template <template <typename...> class Container> constexpr explicit Vector(Container<value_type>&& container);
 
   public:
     constexpr       value_type & operator()(std::size_t index);
@@ -77,6 +80,16 @@ template <typename T> constexpr Vector<T>::Vector(size_t size, const T &value) :
         item = value;
 }
 
+template <typename T> constexpr Vector<T>::Vector(const std::valarray<T>& data) : data(data)
+{
+
+}
+
+template <typename T> constexpr Vector<T>::Vector(std::valarray<T>&& data) : data(std::move(data))
+{
+
+}
+
 template <typename T> constexpr Vector<T>::Vector(std::initializer_list<T> list)
 {
     this->data.resize(list.size());
@@ -95,7 +108,15 @@ constexpr Vector<T>::Vector(Vector &&v) noexcept : data(std::move(v.data))
 {
 }
 
-template <typename T> template <template <typename...> class Container> constexpr Vector<T>::Vector(Container<T> container)
+template <typename T> template <template <typename...> class Container> constexpr Vector<T>::Vector(const Container<T>& container)
+{
+    this->data.resize(container.size());
+    size_t i = 0;
+    for (auto &&item : container)
+        data[i++] = item;
+}
+
+template <typename T> template <template <typename...> class Container> constexpr Vector<T>::Vector(Container<T>&& container)
 {
     this->data.resize(container.size());
     size_t i = 0;
@@ -237,33 +258,25 @@ template <typename T> template <typename U> auto Vector<T>::operator/(const Matr
 
 template <typename T> template <typename U> auto Vector<T>::operator+(const U &val) const
 {
-    using result_val_type = decltype(std::declval<T>() + std::declval<U>());
-    Vector<result_val_type> result(this->size());
-    result.data = data + val;
+    Vector result(this->data + val);
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator-(const U &val) const
 {
-    using result_val_type = decltype(std::declval<T>() - std::declval<U>());
-    Vector<result_val_type> result(this->size());
-    result.data = data - val;
+    Vector result(this->data - val);
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator*(const U &val) const
 {
-    using result_val_type = decltype(std::declval<T>() * std::declval<U>());
-    Vector<result_val_type> result(this->size());
-    result.data = data * val;
+    Vector result(this->data * val);
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator/(const U &val) const
 {
-    using result_val_type = decltype(std::declval<T>() / std::declval<U>());
-    Vector<result_val_type> result(this->size());
-    result.data = data / val;
+    Vector result(this->data / val);
     return result;
 }
 

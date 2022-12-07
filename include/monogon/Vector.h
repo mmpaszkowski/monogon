@@ -14,19 +14,27 @@ template <typename T> class Matrix;
 template <typename T> class Vector
 {
   public:
-    using value_type = T;
-    using size_type = std::size_t;
+    using value_type             = T;
+    using size_type              = std::size_t;
 
-    Vector(size_t size);
-    Vector(size_t size, const T &value);
-    Vector(std::initializer_list<value_type> list);
+    constexpr explicit Vector(size_t size);
+    constexpr explicit Vector(size_t size, const T &value);
+    constexpr Vector(std::initializer_list<value_type> list);
 
-    template <template <typename...> class Container> Vector(Container<value_type> container);
+    constexpr Vector(const Vector& v);
+    constexpr Vector(Vector && v) noexcept;
 
-  public:
-    value_type &operator()(std::size_t index);
+    template <template <typename...> class Container> constexpr explicit Vector(Container<value_type> container);
 
-    const value_type &operator()(std::size_t index) const;
+    constexpr ~Vector();
+
+    constexpr Vector& operator=(const Vector& x);
+    constexpr Vector& operator=(Vector&& x) noexcept;
+
+
+public:
+    constexpr value_type & operator()(std::size_t index);
+    constexpr const value_type & operator()(std::size_t index) const;
 
     auto operator-() const;
 
@@ -66,17 +74,17 @@ template <typename T> class Vector
 };
 
 //--------------------------------------------------- Constructors -----------------------------------------------------
-template <typename T> Vector<T>::Vector(size_t size) : data(size)
+template <typename T> constexpr Vector<T>::Vector(size_t size) : data(size)
 {
 }
 
-template <typename T> Vector<T>::Vector(size_t size, const T &value) : data(size)
+template <typename T> constexpr Vector<T>::Vector(size_t size, const T &value) : data(size)
 {
     for (auto &&item : data)
         item = value;
 }
 
-template <typename T> Vector<T>::Vector(std::initializer_list<T> list)
+template <typename T> constexpr Vector<T>::Vector(std::initializer_list<T> list)
 {
     this->data.resize(list.size());
     size_t i = 0;
@@ -84,7 +92,19 @@ template <typename T> Vector<T>::Vector(std::initializer_list<T> list)
         data[i++] = item;
 }
 
-template <typename T> template <template <typename...> class Container> Vector<T>::Vector(Container<T> container)
+template<typename T>
+constexpr Vector<T>::Vector(const Vector &v) : data(v.data)
+{
+
+}
+
+template<typename T>
+constexpr Vector<T>::Vector(Vector &&v) noexcept : data(std::move(v.data))
+{
+
+}
+
+template <typename T> template <template <typename...> class Container> constexpr Vector<T>::Vector(Container<T> container)
 {
     this->data.resize(container.size());
     size_t i = 0;
@@ -92,14 +112,32 @@ template <typename T> template <template <typename...> class Container> Vector<T
         data[i++] = item;
 }
 
+template<typename T>
+constexpr Vector<T>::~Vector()
+{
+
+}
+
+template<typename T>
+constexpr Vector<T> &Vector<T>::operator=(const Vector &x) {
+    this->data = x.data;
+    return *this;
+}
+
+template<typename T>
+constexpr Vector<T> &Vector<T>::operator=(Vector &&x) noexcept {
+    this->data = std::move(x.data);
+    return *this;
+}
+
 //----------------------------------------------------- Operators ------------------------------------------------------
 
-template <typename T> T &Vector<T>::operator()(std::size_t index)
+template <typename T> constexpr T &Vector<T>::operator()(std::size_t index)
 {
     return data[index];
 }
 
-template <typename T> const T &Vector<T>::operator()(std::size_t index) const
+template <typename T> constexpr const T &Vector<T>::operator()(std::size_t index) const
 {
     return data[index];
 }
@@ -307,12 +345,14 @@ std::ostream& operator<<(std::ostream& os, const Vector<T>& vector)
     os << "[";
     for(size_t i = 0; i < vector.size()-1; i++)
     {
-        os << vector(i) << ",";
+        os << vector(i) << ", ";
     }
     os << vector(vector.size()-1);
     os << "]" << std::endl;
     return os;
 }
+
+
 
 
 #endif //MONOGON_VECTOR_H

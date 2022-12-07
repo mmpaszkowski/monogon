@@ -258,27 +258,44 @@ template <typename T> template <typename U> auto Vector<T>::operator/(const Matr
 
 template <typename T> template <typename U> auto Vector<T>::operator+(const U &val) const
 {
-    Vector result(this->data + val);
+    using result_val_type = decltype(std::declval<T>() + std::declval<U>());
+    Vector<result_val_type> result(this->size());
+    result.data = data + val;
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator-(const U &val) const
 {
-    Vector result(this->data - val);
+    using result_val_type = decltype(std::declval<T>() - std::declval<U>());
+    Vector<result_val_type> result(this->size());
+    result.data = data - val;
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator*(const U &val) const
 {
-    Vector result(this->data * val);
+    using result_val_type = decltype(std::declval<T>() * std::declval<U>());
+    Vector<result_val_type> result(this->size());
+    result.data = data * val;
     return result;
 }
 
 template <typename T> template <typename U> auto Vector<T>::operator/(const U &val) const
 {
-    Vector result(this->data / val);
+    using result_val_type = decltype(std::declval<T>() / std::declval<U>());
+    Vector<result_val_type> result(this->size());
+    for(size_type i = 0; i < this->size(); i++)
+    {
+        result[i] = this->data[i] / val;
+    }
     return result;
 }
+
+//template <typename T> template <typename U> auto Vector<T>::operator/(const U &val) const
+//{
+//    Vector result(this->data / val);
+//    return result;
+//}
 
 template <typename T> template <typename U> bool Vector<T>::operator==(const Vector<U> &rhs) const
 {

@@ -286,13 +286,26 @@ template <typename T> template <typename U> auto Matrix<T>::operator*(const U &v
     return result;
 }
 
+//template <typename T> template <typename U> auto Matrix<T>::operator/(const U &val) const
+//{
+//    using result_val_type = decltype(std::declval<T>() / std::declval<U>());
+//    Matrix<result_val_type> result(this->get_rows(), this->get_columns());
+//    result.data = data / val;
+//    return result;
+//}
+
 template <typename T> template <typename U> auto Matrix<T>::operator/(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
     Matrix<result_val_type> result(this->get_rows(), this->get_columns());
-    result.data = data / val;
+    for(size_t i = 0; i < this->get_rows(); i++)
+        for(size_t j = 0; j < this->get_columns(); j++)
+    {
+        result(i, j) = this->operator()(i,j) / val;
+    }
     return result;
 }
+
 
 template <typename T> template <typename U> bool Matrix<T>::operator==(const Matrix<U> &rhs) const
 {

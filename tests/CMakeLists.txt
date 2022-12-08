@@ -3,6 +3,7 @@ set(TEST_SOURCES
     vector.cpp
     matrix.cpp
     tensor.cpp
+    one_hot.cpp
     variable.cpp
     layer.cpp
     loss.cpp

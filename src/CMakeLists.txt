@@ -6,11 +6,12 @@ set(LIBRARY_SOURCES
 set(LIBRARY_HEADERS
     ../include/monogon/tool/Shape.h
     ../include/monogon/tool/Index.h
+    ../include/monogon/tool/OneHot.h
     ../include/monogon/Vector.h
     ../include/monogon/Matrix.h
     ../include/monogon/Tensor.h
     ../include/monogon/Operation.h
-    ../include/monogon/Variable.h)
+    ../include/monogon/Variable.h ../include/monogon/tool/OneHot.h)
 
 set(LIBRARY_INCLUDES
     ../include

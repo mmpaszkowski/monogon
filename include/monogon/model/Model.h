@@ -10,8 +10,11 @@
 #include "../layer/Layer.h"
 #include "../activation/ActivationFunction.h"
 #include "../tool/Slice.h"
-#include <chrono>
+#include "../view/ModelRenderer.h"
+#include <indicators/progress_bar.hpp>
 #include <iostream>
+
+using namespace indicators;
 
 template <typename T = double> class Model
 {
@@ -51,37 +54,25 @@ void Model<T>::compile(const O<T> &optimizer, const L<T> &loss)
 template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y, size_t epochs, std::size_t batch_size)
 {
     Slice slicer;
+
     for (size_t i = 0; i < epochs; i++)
     {
-        std::cout << "Epoch " << i+1 << "/" << epochs << std::endl;
+        ModelRenderer modelRenderer;
         for(size_t j = 0; j < x.get_rows(); j+=batch_size)
         {
 
             Matrix sub_x = slicer(x, j, j+batch_size);
             Matrix sub_y = slicer(y, j, j+batch_size);
-
 //            auto start = std::chrono::high_resolution_clock::now();
             Variable loss = (*this->loss)(begin->feed_forward(sub_x), sub_y);
             loss.back_propagation();
             begin->update_weights_chain(*optimizer);
             loss.zero_grad();
             auto finish = std::chrono::high_resolution_clock::now();
-            std::cout << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
-            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441" << std::endl;
+//            std::cout << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
+//            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441" << std::endl;
+            modelRenderer.render(j / batch_size + 1, x.get_rows()/batch_size, loss.get_value());
         }
-        std::cout << std::endl;
-//        auto start = std::chrono::high_resolution_clock::now();
-//        Variable loss = (*this->loss)(begin->feed_forward(x), y);
-//        loss.back_propagation();
-//        begin->update_weights_chain(*optimizer);
-//        loss.zero_grad();
-//        auto finish = std::chrono::high_resolution_clock::now();
-
-//        std::cout << "Epoch " << i + 1 << "/" << epochs << " - "
-//                  << std::chrono::duration_cast<std::chrono::seconds>((finish - start)) % 1000 << " "
-//                  << std::chrono::duration_cast<std::chrono::milliseconds>((finish - start)) % 1000 << " "
-//                  << std::chrono::duration_cast<std::chrono::microseconds>((finish - start)) % 1000
-//                  << " / step - loss: " << loss.get_value() << std::endl;
     }
 }
 

@@ -16,12 +16,11 @@ struct Slice
         {
             for(size_t j = 0; j < matrix.get_columns(); j++)
             {
-                result(i,j) = matrix(to+i, j);
+                result(i,j) = matrix(from+i, j);
             }
         }
         return result;
     }
 };
-
 
 #endif //MONOGON_SLICE_H

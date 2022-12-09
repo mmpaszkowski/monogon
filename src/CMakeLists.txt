@@ -12,7 +12,10 @@ set(LIBRARY_HEADERS
     ../include/monogon/Matrix.h
     ../include/monogon/Tensor.h
     ../include/monogon/Operation.h
-    ../include/monogon/Variable.h ../include/monogon/tool/OneHot.h ../include/monogon/tool/Slice.h)
+    ../include/monogon/Variable.h
+    ../include/monogon/tool/OneHot.h
+    ../include/monogon/tool/Slice.h
+    ../include/monogon/view/ModelRenderer.h)
 
 set(LIBRARY_INCLUDES
     ../include
@@ -23,7 +26,10 @@ add_library(${MONOGON_PROJECT_NAME} STATIC
     ${LIBRARY_SOURCES}
     ${LIBRARY_HEADERS})
 
-target_link_libraries(${MONOGON_PROJECT_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${MONOGON_PROJECT_NAME} PRIVATE
+        fmt::fmt
+        indicators::indicators
+        )
 
 target_include_directories(${MONOGON_PROJECT_NAME} PUBLIC ${LIBRARY_INCLUDES})
 

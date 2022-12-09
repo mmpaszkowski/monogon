@@ -74,6 +74,7 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
             auto finish = std::chrono::high_resolution_clock::now();
             modelRenderer.render_progress_bar(j / batch_size + 1, x.get_rows()/batch_size, total_loss/static_cast<T>(total_batches));
         }
+        modelRenderer.finish();
     }
 }
 

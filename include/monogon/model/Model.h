@@ -58,6 +58,7 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
     for (size_t i = 0; i < epochs; i++)
     {
         ModelRenderer modelRenderer;
+        modelRenderer.render_epoch(i+1, epochs);
         for(size_t j = 0; j < x.get_rows(); j+=batch_size)
         {
 
@@ -71,7 +72,7 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
             auto finish = std::chrono::high_resolution_clock::now();
 //            std::cout << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
 //            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441" << std::endl;
-            modelRenderer.render(j / batch_size + 1, x.get_rows()/batch_size, loss.get_value());
+            modelRenderer.render_progress_bar(j / batch_size + 1, x.get_rows()/batch_size, loss.get_value());
         }
     }
 }

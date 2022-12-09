@@ -29,13 +29,18 @@ public:
 
 public:
     template<typename T>
-    void render(size_t iteration, size_t total, T loss)
+    void render_progress_bar(size_t iteration, size_t total, T loss)
     {
         show_console_cursor(false);
         bar.set_option(option::PrefixText{std::to_string(iteration) + "/" + std::to_string(total) + " "});
         bar.set_option(option::PostfixText{"- loss: " + std::to_string(loss)});
         bar.set_progress(100*iteration/total);
         show_console_cursor(true);
+    }
+
+    void render_epoch(size_t iteration, size_t total)
+    {
+        std::cout << "Epoch " << iteration << "/" << total << std::endl;
     }
 
 private:

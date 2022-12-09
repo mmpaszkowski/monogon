@@ -16,7 +16,7 @@ template <typename T = double> class Initializer
 
 template <typename T = double> class GlorotUniform : public Initializer<T>
 {
-  public:
+public:
     Variable<Matrix<T>> operator()(std::size_t rows, std::size_t cols) const override;
 };
 
@@ -34,6 +34,19 @@ Variable<Matrix<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t c
         for (size_t j = 0; j < cols; j++)
             result(i, j) = dis(gen);
 
+    return Variable(result);
+}
+
+template <typename T = double> class Ones : public Initializer<T>
+{
+public:
+    Variable<Matrix<T>> operator()(std::size_t rows, std::size_t cols) const override;
+};
+
+template <typename T>
+Variable<Matrix<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
+{
+    Matrix<T> result(rows, cols, 1.0);
     return Variable(result);
 }
 

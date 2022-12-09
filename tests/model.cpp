@@ -24,6 +24,6 @@ TEST(model, model)
 
     Model model(dense1, activation3);
     model.compile(SGD(1.0), MSE());
-    model.fit(x, y, 1000);
+    model.fit(x, y, 1000, 4);
     std::cout << model.predict(x);
 }

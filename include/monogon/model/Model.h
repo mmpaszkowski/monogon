@@ -9,6 +9,7 @@
 #include "../optimizer/Optimizer.h"
 #include "../layer/Layer.h"
 #include "../activation/ActivationFunction.h"
+#include "../tool/Slice.h"
 #include <chrono>
 #include <iostream>
 
@@ -20,7 +21,7 @@ template <typename T = double> class Model
 
     template <template <typename> typename O, template <typename> typename L>
     void compile(const O<T> &optimizer, const L<T> &loss);
-    virtual void fit(Matrix<T> x, Matrix<T> y, std::size_t epochs = 10);
+    virtual void fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10, std::size_t batch_size=32);
     virtual Matrix<T> predict(Matrix<T> x);
 
   private:
@@ -47,16 +48,31 @@ void Model<T>::compile(const O<T> &optimizer, const L<T> &loss)
     this->loss = std::make_shared<L<T>>(loss);
 }
 
-template <typename T> void Model<T>::fit(Matrix<T> x, Matrix<T> y, size_t epochs)
+template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y, size_t epochs, std::size_t batch_size)
 {
+    Slice slicer;
     for (size_t i = 0; i < epochs; i++)
     {
-        auto start = std::chrono::high_resolution_clock::now();
-        Variable loss = (*this->loss)(begin->feed_forward(x), y);
-        loss.back_propagation();
-        begin->update_weights_chain(*optimizer);
-        loss.zero_grad();
-        auto finish = std::chrono::high_resolution_clock::now();
+        for(size_t j = 0; j < x.get_rows(); j+=batch_size)
+        {
+            Matrix sub_x = slicer(x, j, j+batch_size);
+            Matrix sub_y = slicer(y, j, j+batch_size);
+
+            auto start = std::chrono::high_resolution_clock::now();
+            Variable loss = (*this->loss)(begin->feed_forward(sub_x), sub_y);
+            loss.back_propagation();
+            begin->update_weights_chain(*optimizer);
+            loss.zero_grad();
+            auto finish = std::chrono::high_resolution_clock::now();
+
+            std::cout << "epoch " << i << " batch" << j / batch_size + 1 << std::endl;
+        }
+//        auto start = std::chrono::high_resolution_clock::now();
+//        Variable loss = (*this->loss)(begin->feed_forward(x), y);
+//        loss.back_propagation();
+//        begin->update_weights_chain(*optimizer);
+//        loss.zero_grad();
+//        auto finish = std::chrono::high_resolution_clock::now();
 
 //        std::cout << "Epoch " << i + 1 << "/" << epochs << " - "
 //                  << std::chrono::duration_cast<std::chrono::seconds>((finish - start)) % 1000 << " "

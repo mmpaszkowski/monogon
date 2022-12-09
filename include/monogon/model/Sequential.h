@@ -14,7 +14,9 @@ template <typename T> class Sequential : public Model<T>
 {
   public:
     void compile(Loss<T> loss, Optimizer<T> optimizer) override;
-    void fit(Matrix<T> training_data, Matrix<T> target_data, size_t epochs = 1) override;
+
+    void fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10) override;
+
     void predict(Matrix<T> training_data) override;
 
     void add(Input<T> layer);
@@ -33,9 +35,10 @@ template <typename T> void Sequential<T>::compile(Loss<T> loss, Optimizer<T> opt
     this->optimizer = optimizer;
 }
 
-template <typename T> void Sequential<T>::fit(Matrix<T> training_data, Matrix<T> target_data, size_t epochs)
+template <typename T> void Sequential<T>::fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10)
 {
 }
+
 
 template <typename T> void Sequential<T>::predict(Matrix<T> training_data)
 {

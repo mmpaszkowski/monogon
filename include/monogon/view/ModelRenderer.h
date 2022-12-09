@@ -40,7 +40,7 @@ public:
 
     void render_epoch(size_t iteration, size_t total)
     {
-        std::cout << "Epoch " << iteration << "/" << total;
+        std::cout << "Epoch " << iteration << "/" << total << std::endl;
     }
 
     void finish()

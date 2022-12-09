@@ -66,8 +66,8 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
             begin->update_weights_chain(*optimizer);
             loss.zero_grad();
             auto finish = std::chrono::high_resolution_clock::now();
-            std::cout << "\r" << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
-            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441";
+            std::cout << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
+            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441" << std::endl;
         }
         std::cout << std::endl;
 //        auto start = std::chrono::high_resolution_clock::now();

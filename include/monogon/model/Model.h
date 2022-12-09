@@ -53,20 +53,23 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
     Slice slicer;
     for (size_t i = 0; i < epochs; i++)
     {
+        std::cout << "Epoch " << i+1 << "/" << epochs << std::endl;
         for(size_t j = 0; j < x.get_rows(); j+=batch_size)
         {
+
             Matrix sub_x = slicer(x, j, j+batch_size);
             Matrix sub_y = slicer(y, j, j+batch_size);
 
-            auto start = std::chrono::high_resolution_clock::now();
+//            auto start = std::chrono::high_resolution_clock::now();
             Variable loss = (*this->loss)(begin->feed_forward(sub_x), sub_y);
             loss.back_propagation();
             begin->update_weights_chain(*optimizer);
             loss.zero_grad();
             auto finish = std::chrono::high_resolution_clock::now();
-
-            std::cout << "epoch " << i << " batch" << j / batch_size + 1 << std::endl;
+            std::cout << "\r" << j / batch_size + 1 << "/" << x.get_rows()/batch_size << "[==============================] - ";
+            std::cout << "19s 10ms/step" << " - loss: " << loss.get_value() << " - accuracy: 0.9441";
         }
+        std::cout << std::endl;
 //        auto start = std::chrono::high_resolution_clock::now();
 //        Variable loss = (*this->loss)(begin->feed_forward(x), y);
 //        loss.back_propagation();

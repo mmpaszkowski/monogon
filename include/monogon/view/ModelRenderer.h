@@ -1,0 +1,8 @@
+//
+// Created by noname on 09.12.22.
+//
+
+#ifndef MONOGON_MODELRENDERER_H
+#define MONOGON_MODELRENDERER_H
+
+#endif //MONOGON_MODELRENDERER_H

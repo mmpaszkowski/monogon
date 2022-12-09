@@ -26,7 +26,7 @@ add_library(${MONOGON_PROJECT_NAME} STATIC
     ${LIBRARY_SOURCES}
     ${LIBRARY_HEADERS})
 
-target_link_libraries(${MONOGON_PROJECT_NAME} PRIVATE
+target_link_libraries(${MONOGON_PROJECT_NAME} PUBLIC
         fmt::fmt
         indicators::indicators
         )

@@ -11,9 +11,9 @@
 #include "../activation/ActivationFunction.h"
 #include "../tool/Slice.h"
 #include "../view/ModelRenderer.h"
+#include "../metric/CategoricalAccuracy.h"
 #include <indicators/progress_bar.hpp>
 #include <iostream>
-
 using namespace indicators;
 
 template <typename T = double> class Model
@@ -58,21 +58,25 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
     for (size_t i = 0; i < epochs; i++)
     {
         T total_loss = 0.0;
+        T total_accuracy = 0.0;
         size_t total_batches = 0;
         ModelRenderer modelRenderer;
+        CategoricalAccuracy<T> categoricalAccuracy;
         modelRenderer.render_epoch(i+1, epochs);
         for(size_t j = 0; j < x.get_rows(); j+=batch_size)
         {
             Matrix sub_x = slicer(x, j, j+batch_size);
             Matrix sub_y = slicer(y, j, j+batch_size);
-            Variable loss = (*this->loss)(begin->feed_forward(sub_x), sub_y);
+            Variable y_pred = begin->feed_forward(sub_x);
+            Variable loss = (*this->loss)(y_pred, sub_y);
             loss.back_propagation();
             total_loss += loss.get_value();
+            total_accuracy += categoricalAccuracy(y_pred.get_value(), sub_y);
             total_batches++;
             begin->update_weights_chain(*optimizer);
             loss.zero_grad();
             auto finish = std::chrono::high_resolution_clock::now();
-            modelRenderer.render_progress_bar(j / batch_size + 1, x.get_rows()/batch_size, total_loss/static_cast<T>(total_batches));
+            modelRenderer.render_progress_bar(j / batch_size + 1, x.get_rows()/batch_size, total_loss/static_cast<T>(total_batches), total_accuracy/static_cast<T>(total_batches));
         }
 //        modelRenderer.finish();
     }

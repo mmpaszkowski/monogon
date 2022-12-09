@@ -8,6 +8,8 @@ set(LIBRARY_HEADERS
     ../include/monogon/tool/Index.h
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
+        ../include/monogon/metric/Metric.h
+    ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Vector.h
     ../include/monogon/Matrix.h
     ../include/monogon/Tensor.h
@@ -15,7 +17,7 @@ set(LIBRARY_HEADERS
     ../include/monogon/Variable.h
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
-    ../include/monogon/view/ModelRenderer.h)
+    ../include/monogon/view/ModelRenderer.h ../include/monogon/metric/Metric.h ../include/monogon/metric/CategoricalAccuracy.h)
 
 set(LIBRARY_INCLUDES
     ../include

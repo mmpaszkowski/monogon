@@ -1,5 +1,6 @@
 set(TEST_MAIN ${MONOGON_PROJECT_NAME}_unit_tests)
 set(TEST_SOURCES
+    metric.cpp
     vector.cpp
     matrix.cpp
     tensor.cpp

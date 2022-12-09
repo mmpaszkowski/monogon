@@ -6,6 +6,7 @@
 #define MONOGON_MODELRENDERER_H
 
 #include <indicators/progress_bar.hpp>
+#include <indicators/cursor_control.hpp>
 
 using namespace indicators;
 
@@ -20,6 +21,7 @@ public:
                 option::Lead{">"},
                 option::Remainder{"."},
                 option::End{"]"},
+                option::ShowElapsedTime{true}
         }
     {
 
@@ -29,9 +31,11 @@ public:
     template<typename T>
     void render(size_t iteration, size_t total, T loss)
     {
+        show_console_cursor(false);
         bar.set_option(option::PrefixText{std::to_string(iteration) + "/" + std::to_string(total) + " "});
-        bar.set_option(option::PostfixText{" - ETA: 0s - loss: " + std::to_string(loss)});
+        bar.set_option(option::PostfixText{"- ETA: 0s - loss: " + std::to_string(loss)});
         bar.set_progress(100*iteration/total);
+        show_console_cursor(true);
     }
 
 private:

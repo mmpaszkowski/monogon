@@ -21,7 +21,7 @@ public:
                 option::Lead{">"},
                 option::Remainder{"."},
                 option::End{"]"},
-                option::ShowElapsedTime{true}
+                option::ShowRemainingTime{true}
         }
     {
 

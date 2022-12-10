@@ -31,10 +31,17 @@ public:
     template<typename T>
     void render_progress_bar(size_t iteration, size_t total, T loss, T accuracy)
     {
+
         show_console_cursor(false);
+        if(iteration == total)
+        {
+            bar.set_option(option::ShowRemainingTime{false});
+            bar.set_option(option::ShowElapsedTime{true});
+        }
         bar.set_option(option::PrefixText{std::to_string(iteration) + "/" + std::to_string(total) + " "});
         bar.set_option(option::PostfixText{"- loss: " + std::to_string(loss) + " - categorical_accuracy " + std::to_string(accuracy)});
         bar.set_progress(100*iteration/total);
+
         show_console_cursor(true);
     }
 

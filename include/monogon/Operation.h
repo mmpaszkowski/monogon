@@ -49,12 +49,12 @@ template <typename U> struct Init<Tensor<U>>
 
 struct Operation
 {
-    virtual std::tuple<std::any, std::any> perform(const std::any, const std::any, const std::any) const = 0;
+    virtual std::tuple<std::any, std::any> perform(const std::any&, const std::any&, const std::any&) const = 0;
 };
 
 template <typename T = void, typename U = void, typename V = void> struct AddOperation : public Operation
 {
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any, const std::any) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any&, const std::any&) const override
     {
         return std::tuple(grad, grad);
     }
@@ -65,7 +65,7 @@ template <typename T, typename U, typename V> struct AddOperation<T, Matrix<U>, 
     using grad_type = T;
     using lhs_type = Matrix<U>;
     using rhs_type = Vector<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Vector<V> r_result = Vector<V>(std::any_cast<rhs_type>(rhs).size(), 0.0);
 
@@ -85,7 +85,7 @@ template <typename T, typename U, typename V> struct AddOperation<T, Matrix<U>, 
     using grad_type = T;
     using lhs_type = Matrix<U>;
     using rhs_type = Matrix<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Matrix<U> l_result
             = Matrix<U>(std::any_cast<lhs_type>(lhs).get_rows(), std::any_cast<lhs_type>(lhs).get_columns(), 0.0);
@@ -111,7 +111,7 @@ template <typename T, typename U, typename V> struct AddOperation<T, Matrix<U>, 
 template <typename T> struct SubOperation : public Operation
 {
     using grad_type = T;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any, const std::any) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any&, const std::any&) const override
     {
         return std::tuple(grad, -(std::any_cast<grad_type>(grad)));
     }
@@ -122,7 +122,7 @@ template <typename T, typename U, typename V> struct MulOperation : public Opera
     using grad_type = T;
     using lhs_type = U;
     using rhs_type = V;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         return std::tuple(std::any_cast<grad_type>(grad) * std::any_cast<rhs_type>(rhs),
                           std::any_cast<grad_type>(grad) * std::any_cast<lhs_type>(lhs));
@@ -134,7 +134,7 @@ template <typename T, typename U, typename V> struct DivOperation : public Opera
     using grad_type = T;
     using lhs_type = U;
     using rhs_type = V;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Init<lhs_type> lhs_initializer;
 
@@ -148,7 +148,7 @@ template <typename T, typename U, typename V> struct DivOperation : public Opera
 
 template <typename T = void, typename U = void, typename V = void> struct EqualOperation : public Operation
 {
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any, const std::any) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any&, const std::any&) const override
     {
         return std::tuple(grad, std::any());
     }
@@ -161,7 +161,7 @@ template <typename T, typename U, typename V> struct DotOperation<T, Vector<U>, 
     using grad_type = T;
     using lhs_type = Vector<U>;
     using rhs_type = Vector<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Vector<U> l_result = std::any_cast<rhs_type>(rhs);
         Vector<V> r_result = std::any_cast<lhs_type>(lhs);
@@ -174,7 +174,7 @@ template <typename T, typename U, typename V> struct DotOperation<T, Matrix<U>, 
     using grad_type = T;
     using lhs_type = Matrix<U>;
     using rhs_type = Vector<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Vector<V> r_result = std::any_cast<lhs_type>(lhs).transpose().dot(std::any_cast<grad_type>(grad));
         Matrix<V> l_result = std::any_cast<grad_type>(grad).dot(std::any_cast<rhs_type>(rhs).transpose());
@@ -187,7 +187,7 @@ template <typename T, typename U, typename V> struct DotOperation<T, Matrix<U>, 
     using grad_type = T;
     using lhs_type = Matrix<U>;
     using rhs_type = Matrix<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         rhs_type r_result = std::any_cast<lhs_type>(lhs).transpose().dot(std::any_cast<grad_type>(grad));
         lhs_type l_result = std::any_cast<grad_type>(grad).dot(std::any_cast<rhs_type>(rhs).transpose());
@@ -200,7 +200,7 @@ template <typename T, typename U, typename V> struct DotOperation<T, Tensor<U>, 
     using grad_type = T;
     using lhs_type = Tensor<U>;
     using rhs_type = Tensor<V>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_value = std::any_cast<rhs_type>(rhs);
@@ -221,7 +221,7 @@ template <typename T, typename U, typename V> struct MaxOperation<T, Matrix<U>, 
     using lhs_type = Matrix<U>;
     using rhs_type = V;
 
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_value = std::any_cast<rhs_type>(rhs);
@@ -242,7 +242,7 @@ template <typename T, typename U> struct AvgOperation<T, Vector<U>> : public Ope
 {
     using grad_type = T;
     using lhs_type = Vector<U>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any rhs) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any& rhs) const override
     {
         Vector<U> l_result = Vector<U>(std::any_cast<lhs_type>(lhs).size(), 1.0 / std::any_cast<lhs_type>(lhs).size())
                              * std::any_cast<grad_type>(grad);
@@ -254,7 +254,7 @@ template <typename T, typename U> struct AvgOperation<T, Matrix<U>> : public Ope
 {
     using grad_type = T;
     using lhs_type = Matrix<U>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any&) const override
     {
         Matrix<U> l_result
             = Matrix<U>(std::any_cast<lhs_type>(lhs).get_rows(),
@@ -271,7 +271,7 @@ template <typename T, typename U> struct ExpOperation<T, Matrix<U>> : public Ope
 {
     using grad_type = T;
     using lhs_type = Matrix<U>;
-    std::tuple<std::any, std::any> perform(const std::any grad, const std::any lhs, const std::any) const override
+    std::tuple<std::any, std::any> perform(const std::any& grad, const std::any& lhs, const std::any&) const override
     {
         Matrix<U> l_result = std::any_cast<lhs_type>(lhs).exp() * std::any_cast<grad_type>(grad);
         return std::tuple(l_result, std::any());

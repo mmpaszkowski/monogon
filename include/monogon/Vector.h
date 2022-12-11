@@ -125,9 +125,7 @@ template <typename T> template <template <typename...> class Container> constexp
 }
 
 template<typename T>
- Vector<T>::~Vector()
-{
-}
+ Vector<T>::~Vector() = default;
 
 template<typename T>
 constexpr Vector<T> &Vector<T>::operator=(const Vector &x) {

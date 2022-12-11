@@ -5,43 +5,35 @@
 #ifndef MONOGON_MODELRENDERER_H
 #define MONOGON_MODELRENDERER_H
 
-#include <indicators/progress_bar.hpp>
 #include <indicators/cursor_control.hpp>
+#include <indicators/progress_bar.hpp>
 
-using namespace indicators;
+using std::to_string;
+using indicators::ProgressBar;
+using indicators::show_console_cursor;
+using namespace indicators::option;
 
 class ModelRenderer
 {
 public:
-    ModelRenderer():
-        bar{
-                option::BarWidth{30},
-                option::Start{"["},
-                option::Fill{"="},
-                option::Lead{">"},
-                option::Remainder{"."},
-                option::End{"]"},
-                option::ShowRemainingTime{true}
-        }
+    ModelRenderer()
+        : bar{BarWidth{30}, Start{"["}, Fill{"="}, Lead{">"}, Remainder{"."}, End{"]"}, ShowRemainingTime{true}}
     {
-
     }
 
 public:
-    template<typename T>
+    template <typename T>
     void render_progress_bar(size_t iteration, size_t total, T loss, T accuracy)
     {
-
         show_console_cursor(false);
-        if(iteration == total)
+        if (iteration == total)
         {
-            bar.set_option(option::ShowRemainingTime{false});
-            bar.set_option(option::ShowElapsedTime{true});
+            bar.set_option(ShowRemainingTime{false});
+            bar.set_option(ShowElapsedTime{true});
         }
-        bar.set_option(option::PrefixText{std::to_string(iteration) + "/" + std::to_string(total) + " "});
-        bar.set_option(option::PostfixText{"- loss: " + std::to_string(loss) + " - categorical_accuracy " + std::to_string(accuracy)});
-        bar.set_progress(100*iteration/total);
-
+        bar.set_option(PrefixText{to_string(iteration) + "/" + to_string(total) + " "});
+        bar.set_option(PostfixText{"- loss: " + to_string(loss) + " - categorical_accuracy " + to_string(accuracy)});
+        bar.set_progress(100 * iteration / total);
         show_console_cursor(true);
     }
 

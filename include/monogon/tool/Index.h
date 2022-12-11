@@ -1,17 +1,18 @@
 //
-// Created by noname on 12.11.22.
+// Created by Mateusz Paszkowski on 12.11.22.
 //
 
-#ifndef MATH_INDEX_H
-#define MATH_INDEX_H
+#ifndef MONOGON_INDEX_H
+#define MONOGON_INDEX_H
+
+#include "Shape.h"
+#include <optional>
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
-#include <optional>
-#include "Shape.h"
 
 class Index
 {
-  public:
+public:
     using value_type = size_t;
     using reference = value_type &;
     using const_reference = const value_type &;
@@ -21,12 +22,18 @@ class Index
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  public:
-    Index(std::vector<value_type> data);
-    Index(Shape data);
-    Index(const Index& data);
+public:
+    Index(const std::vector<value_type> &data);
+    Index(std::vector<value_type> &&data) noexcept;
+    Index(Shape shape);
+    Index(const Index &index);
+    Index(Index &&index) noexcept;
+    ~Index();
 
-  public:
+    Index &operator=(const Index &rhs);
+    Index &operator=(Index &&rhs) noexcept;
+
+public:
     reference operator[](size_type i);
     const_reference operator[](size_type i) const;
 
@@ -37,29 +44,28 @@ class Index
 
     bool operator<(const Index &index);
 
-  public:
-    Index & increment(long long axis);
+public:
+    Index &increment(long long axis);
 
-  public:
+public:
     value_type size() const;
 
-     iterator begin() noexcept;
-     const_iterator begin() const noexcept;
-     iterator end() noexcept;
-     const_iterator end() const noexcept;
+    iterator begin() noexcept;
+    const_iterator begin() const noexcept;
+    iterator end() noexcept;
+    const_iterator end() const noexcept;
 
-     reverse_iterator rbegin() noexcept;
-     const_reverse_iterator rbegin() const noexcept;
-     reverse_iterator rend() noexcept;
-     const_reverse_iterator rend() const noexcept;
+    reverse_iterator rbegin() noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    reverse_iterator rend() noexcept;
+    const_reverse_iterator rend() const noexcept;
 
-  private:
+private:
     std::vector<value_type> __data;
     std::optional<Shape> __shape;
 
-  public:
+public:
     friend std::ostream &operator<<(std::ostream &os, const Index &variable);
 };
 
-
-#endif //MATH_INDEX_H
+#endif //MONOGON_INDEX_H

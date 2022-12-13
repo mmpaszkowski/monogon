@@ -334,8 +334,8 @@ template <typename T> template <typename U> auto Matrix<T>::dot(const Matrix<U> 
     Matrix<result_val_type> result(this->row_size, rhs.column_size);
 
     for (size_t i = 0; i < this->row_size; ++i)
-        for (size_t k = 0; k < this->column_size; ++k)
-            for (size_t j = 0; j < rhs.column_size; ++j)
+        for (size_t j = 0; j < rhs.column_size; ++j)
+            for (size_t k = 0; k < this->column_size; ++k)
                     result(i, j) += data[i * this->column_size + k] * rhs(k, j);
 
     return result;

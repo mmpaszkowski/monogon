@@ -22,7 +22,7 @@ target_link_libraries(${TEST_MAIN} PUBLIC ${MONOGON_PROJECT_NAME})
 target_link_libraries(${TEST_MAIN} PRIVATE
         GTest::gtest_main
         indicators::indicators
-        openblas)
+        openblas OpenMP::OpenMP_CXX)
 
 if (${MONOGON_ENABLE_WARNINGS})
     target_set_warnings(TARGET ${TEST_MAIN} ENABLE ON AS_ERROR OFF)

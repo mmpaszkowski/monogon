@@ -50,6 +50,8 @@ FetchContent_Declare(
         GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(indicators)
 
+find_package(OpenMP REQUIRED)
+
 #FetchContent_Declare(
 #        open_blas
 #        GIT_REPOSITORY https://github.com/xianyi/OpenBLAS.git

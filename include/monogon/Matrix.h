@@ -8,6 +8,7 @@
 #include <cassert>
 #include <ostream>
 #include <valarray>
+#include <omp.h>
 
 template <typename T> class Vector;
 
@@ -333,9 +334,12 @@ template <typename T> template <typename U> auto Matrix<T>::dot(const Matrix<U> 
     using result_val_type = decltype(std::declval<T>() + std::declval<T>() * std::declval<U>());
     Matrix<result_val_type> result(this->row_size, rhs.column_size);
 
-    for (size_t i = 0; i < this->row_size; ++i)
-        for (size_t k = 0; k < this->column_size; ++k)
-            for (size_t j = 0; j < rhs.column_size; ++j)
+    size_t i = 0, j = 0, k = 0;
+
+    #pragma omp parallel for private(i,j,k) shared(result,data,rhs)
+    for ( i = 0; i < this->row_size; ++i)
+        for ( k = 0; k < this->column_size; ++k)
+            for ( j = 0; j < rhs.column_size; ++j)
                     result(i, j) += data[i * this->column_size + k] * rhs(k, j);
 
     return result;

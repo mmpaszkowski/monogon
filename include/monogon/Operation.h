@@ -11,6 +11,7 @@
 #include <iostream>
 #include <numeric>
 #include <tuple>
+#include <vector>
 
 template <typename T>
 class Vector;

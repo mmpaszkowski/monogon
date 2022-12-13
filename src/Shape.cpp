@@ -3,7 +3,7 @@
 //
 
 #include <monogon/tool/Shape.h>
-
+#include <monogon/tool/Index.h>
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
 Shape::Shape() : __data()
@@ -74,6 +74,13 @@ Shape::value_type Shape::size() const
 {
     return __data.size();
 }
+
+Index Shape::last_index() const
+{
+// #Todo Index
+    return Index({1, 2, 3});
+}
+
 
 Shape::iterator Shape::begin() noexcept
 {

@@ -8,7 +8,7 @@ set(LIBRARY_HEADERS
     ../include/monogon/tool/Index.h
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
-        ../include/monogon/metric/Metric.h
+    ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Vector.h
     ../include/monogon/Matrix.h

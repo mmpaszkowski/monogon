@@ -119,9 +119,51 @@ TEST(tensor, transpose)
 TEST(tensor, dot)
 {
     Tensor T1({{{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
-               {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}}
-    });
+               {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}}});
 
     Tensor T2({{{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}},
                {{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}}});
+}
+
+TEST(tensor, complex)
+{
+    const size_t in_features = 2;
+    const size_t layer1 = 3;
+    const size_t classes = 1;
+    double lr = 0.01;
+
+    Tensor x{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
+    Tensor y{std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{1.0}};
+    Tensor weights1{{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
+    Tensor weights2{std::initializer_list<double>{1.0}, std::initializer_list<double>{1.0}, std::initializer_list<double>{1.0}};
+    Tensor bias1{std::initializer_list<double>{1.0}, std::initializer_list<double>{1.0}, std::initializer_list<double>{1.0}};
+    Tensor bias2{std::initializer_list<double>{1.0}};
+
+    Tensor y_pred1 = x.dot(weights1) + bias1;
+    Tensor y_pred = y_pred1.dot(weights2) + bias2;
+
+    Tensor expected_y_pred = {std::initializer_list<double>{4.0},
+                              std::initializer_list<double>{7.0},
+                              std::initializer_list<double>{7.0},
+                              std::initializer_list<double>{10.0}};
+
+    GTEST_ASSERT_EQ(expected_y_pred == y_pred, true);
+
+    double loss = ((y - y_pred) * (y - y_pred)).avg();
+//
+//    std::cout << loss;
+//    GTEST_ASSERT_EQ(loss == 48.75, true);
+//    loss.back_propagation();
+//
+//    weights1.set_value(weights1.get_value() - weights1.get_grad() * lr);
+//    bias1.set_value(bias1.get_value() - bias1.get_grad() * lr);
+//
+//    weights2.set_value(weights2.get_value() - weights2.get_grad() * lr);
+//    bias2.set_value(bias2.get_value() - bias2.get_grad() * lr);
+//
+//    Matrix expected_weights1 = {{0.92, 0.92, 0.92}, {0.92, 0.92, 0.92}};
+//    GTEST_ASSERT_EQ(weights1.get_value() == expected_weights1, true);
+//
+//    Matrix expected_bias = {{0.865}, {0.865}, {0.865}};
+//    GTEST_ASSERT_EQ(bias1.get_value() == expected_bias, true);
 }

@@ -43,13 +43,19 @@ FetchContent_Declare(
         GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(fmt)
 
-# EXTERNAL LIBRARIES
 FetchContent_Declare(
         indicators
         GIT_REPOSITORY https://github.com/p-ranav/indicators.git
         GIT_TAG v2.2
         GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(indicators)
+
+#FetchContent_Declare(
+#        open_blas
+#        GIT_REPOSITORY https://github.com/xianyi/OpenBLAS.git
+#        GIT_TAG v0.3.21
+#        GIT_SHALLOW TRUE)
+#FetchContent_MakeAvailable(open_blas)
 
 # SUBDIRECTORIES
 add_subdirectory(configured)

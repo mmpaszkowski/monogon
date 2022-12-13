@@ -44,6 +44,8 @@ public:
 
     bool operator<(const Index &index);
 
+    Index operator%(const Shape &shape);
+
 public:
     Index &increment(long long axis);
 

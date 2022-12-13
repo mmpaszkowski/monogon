@@ -90,6 +90,19 @@ bool Index::operator<(const Index &index)
     return __data < index.__data;
 }
 
+
+Index Index::operator%(const Shape &shape)
+{
+    std::vector<size_t> result;
+
+    for(size_t i = 0; i < __data.size(); i++)
+    {
+        result.push_back(__data[i] % shape[i]);
+    }
+
+    return Index(result);
+}
+
 //----------------------------------------------------- Methods --------------------------------------------------------
 
 Index::value_type Index::size() const

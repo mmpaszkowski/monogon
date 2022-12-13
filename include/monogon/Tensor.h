@@ -49,10 +49,18 @@ template <typename T> class Tensor
     template <typename U> auto operator*(const Tensor<U> &rhs) const;
     template <typename U> auto operator/(const Tensor<U> &rhs) const;
 
+    template <typename U> auto operator+(const U &val) const;
+    template <typename U> auto operator-(const U &val) const;
+    template <typename U> auto operator*(const U &val) const;
+    template <typename U> auto operator/(const U &val) const;
+
     template <typename U> bool operator==(const Tensor<U> &rhs) const;
 
     Tensor<T> transpose(const std::vector<size_type> &indexes) const;
     template <typename U> Tensor<T> dot(const Tensor<U> &rhs) const;
+
+    T avg() const;
+
 
   public:
     const Shape &shape() const;
@@ -99,13 +107,14 @@ template <typename T> Tensor<T>::Tensor(const std::initializer_list<std::initial
     size_t i = 0;
     size_t j = 0;
 
-    for (const auto &item_i : list)
+    for (auto item_i : list)
     {
-        for (const auto &item_j : item_i)
+        for (auto item_j : item_i)
         {
-            this->data[j++] = item_j;
+            this->data[i * shape_data[1] + j++] = item_j;
         }
         i++;
+        j = 0;
     }
 }
 
@@ -217,7 +226,7 @@ template <typename T> template <typename... Ts> typename Tensor<T>::reference Te
     {
         result_index = result_index * __shape[i] + index[i];
     }
-    result_index += index.back();
+
     return data[result_index];
 }
 
@@ -225,12 +234,12 @@ template <typename T>
 template <typename... Ts>
 typename Tensor<T>::const_reference Tensor<T>::operator()(Ts... indexes) const
 {
+
     std::vector<size_t> index = {indexes...};
     size_t result_index = index.front();
 
     for (size_t i = 1; i < index.size(); i++)
         result_index = result_index * __shape[i] + index[i];
-    result_index += index.back();
 
     return data[result_index];
 }
@@ -261,7 +270,28 @@ template <typename T> auto Tensor<T>::operator-() const
 
 template <typename T> template <typename U> auto Tensor<T>::operator+(const Tensor<U> &rhs) const
 {
-    Tensor result(__shape, this->data + rhs.data);
+    Index lhs_idx(this->shape());
+    Index rhs_ids(rhs.shape());
+
+    Shape result_shape;
+    std::vector<size_t> shape;
+    for(size_t i = 0; i < __shape.size(); i++)
+    {
+        shape.push_back(std::max(rhs.__shape[i], __shape[i]));
+        result_shape = shape;
+    }
+
+    Index idx(result_shape);
+    Index end(result_shape);
+    end[0] = result_shape[0];
+
+    Tensor result(result_shape, 0.0);
+
+    for(; idx < end; ++idx)
+    {
+        result(idx) = this->operator()(idx % __shape) + rhs(idx % rhs.shape());
+    }
+
     return result;
 }
 
@@ -280,6 +310,38 @@ template <typename T> template <typename U> auto Tensor<T>::operator*(const Tens
 template <typename T> template <typename U> auto Tensor<T>::operator/(const Tensor<U> &rhs) const
 {
     Tensor result(__shape, this->data / rhs.data);
+    return result;
+}
+
+template <typename T> template <typename U> auto Tensor<T>::operator+(const U &val) const
+{
+    using result_val_type = decltype(std::declval<T>() + std::declval<U>());
+    Tensor<result_val_type> result(this->shape());
+    result.data = data + val;
+    return result;
+}
+
+template <typename T> template <typename U> auto Tensor<T>::operator-(const U &val) const
+{
+    using result_val_type = decltype(std::declval<T>() - std::declval<U>());
+    Tensor<result_val_type> result(this->shape());
+    result.data = data - val;
+    return result;
+}
+
+template <typename T> template <typename U> auto Tensor<T>::operator*(const U &val) const
+{
+    using result_val_type = decltype(std::declval<T>() * std::declval<U>());
+    Tensor<result_val_type> result(this->shape());
+    result.data = data * val;
+    return result;
+}
+
+template <typename T> template <typename U> auto Tensor<T>::operator/(const U &val) const
+{
+    using result_val_type = decltype(std::declval<T>() / std::declval<U>());
+    Tensor<result_val_type> result(this->shape());
+    result.data = data / val;
     return result;
 }
 
@@ -347,10 +409,38 @@ template <typename T> template <typename U> Tensor<T> Tensor<T>::dot(const Tenso
     Index end(this->shape());
     end[0] = shape()[0];
 
-    for(Index index(this->shape()); index < end; index.increment(-3))
+    if(__shape.size() > 2)
     {
-        Index sub_index = index;
+        for(Index index(this->shape()); index < end; index.increment(-3))
+        {
+            Index sub_index = index;
+            for (size_t i = 0; i < this->__shape(-2); i++)
+            {
+                for (size_t j = 0; j < rhs.shape()(-1); j++)
+                {
+                    for (size_t k = 0; k < this->__shape(-1); ++k)
+                    {
+                        Index sub_index_i_j = sub_index;
+                        sub_index_i_j(-2) = i;
+                        sub_index_i_j(-1) = j;
+                        Index sub_index_k_j = sub_index;
+                        sub_index_k_j(-2) = k;
+                        sub_index_k_j(-1) = j;
+                        Index sub_index_i_k = sub_index;
+                        sub_index_i_k(-2) = i;
+                        sub_index_i_k(-1) = k;
+//                        std::cout << sub_index_i_j << " += lhs(" << sub_index_i_k << ") * rhs(" << sub_index_k_j << ")" << std::endl;
 
+                        result(sub_index_i_j) += this->operator()(sub_index_i_k) * rhs(sub_index_k_j);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        Index index(this->shape());
+        Index sub_index = index;
         for (size_t i = 0; i < this->__shape(-2); i++)
         {
             for (size_t j = 0; j < rhs.shape()(-1); j++)
@@ -366,19 +456,61 @@ template <typename T> template <typename U> Tensor<T> Tensor<T>::dot(const Tenso
                     Index sub_index_i_k = sub_index;
                     sub_index_i_k(-2) = i;
                     sub_index_i_k(-1) = k;
+//                    std::cout << sub_index_i_j << " += lhs(" << sub_index_i_k << ") * rhs(" << sub_index_k_j << ")" << std::endl;
                     result(sub_index_i_j) += this->operator()(sub_index_i_k) * rhs(sub_index_k_j);
                 }
             }
         }
     }
-
     return result;
 }
 
+template<typename T>
+T Tensor<T>::avg() const
+{
+    T sum{};
+    for (const auto &item : data)
+        sum += item;
+
+    return sum / data.size();
+}
+
+
+template <typename U>
+void print(std::ostream &os, const Tensor<U> &tensor, size_t shape_index, std::vector<size_t> index)
+{
+    if(shape_index == (tensor.shape().size()-1))
+    {
+        index.push_back(0);
+        for(size_t j = 0; j < (tensor.shape()(tensor.shape().size()-1)); j++)
+        {
+            os << tensor(index);
+            index.back()++;
+            if(index.back() < tensor.shape()(tensor.shape().size()-1))
+                os << ", ";
+        }
+    }
+    else
+    {
+        for(size_t i = 0; i < tensor.shape()(shape_index); i++)
+        {
+            os << "{";
+            std::vector<size_t> new_index = index;
+            new_index.push_back(i);
+            print(os, tensor, shape_index+1, new_index);
+            os << "}";
+            if(i < tensor.shape()(shape_index)-1)
+                os << ", ";
+        }
+    }
+};
+
 template <typename U> std::ostream &operator<<(std::ostream &os, const Tensor<U> &tensor)
 {
-    for (const auto &item : tensor.data)
-        os << item << ", ";
+    std::vector<size_t> idx{};
+    os << "{";
+    print(os, tensor, 0, idx);
+    os << "}";
     return os;
 }
 

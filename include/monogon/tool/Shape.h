@@ -12,6 +12,8 @@
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
+class Index;
+
 class Shape
 {
 public:
@@ -44,7 +46,7 @@ public:
 
 public:
     value_type size() const;
-
+    Index last_index() const;
     iterator begin() noexcept;
     const_iterator begin() const noexcept;
     iterator end() noexcept;

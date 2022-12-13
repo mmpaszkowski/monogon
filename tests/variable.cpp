@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 #include <monogon/Matrix.h>
+#include <monogon/Tensor.h>
 #include <monogon/Variable.h>
 #include <monogon/Vector.h>
-#include <monogon/Tensor.h>
 
 TEST(variable, addition)
 {
@@ -272,18 +272,18 @@ TEST(variable, matrix_exp)
 TEST(variable, tensor)
 {
     Variable<Tensor<double>> A(
-            {{{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
-             {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}}});
+        {{{{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
+         {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}, {1.0, 1.0}}}});
 
     Variable<Tensor<double>> B(
-            {{{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}},
-             {{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}}});
+        {{{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}},
+         {{{1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0}}, {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}}});
 
     Tensor<double> expected_result(
-            {{{{2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}},
-                     {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}},
-             {{{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}},
-                     {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}}});
+        {{{{2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}, {2.0, 2.0, 2.0, 2.0}},
+          {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}},
+         {{{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}},
+          {{0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}, {0.0, 0.0, 0.0, 0.0}}}});
 
     Variable result = A.dot(B);
     result.back_propagation();
@@ -291,14 +291,14 @@ TEST(variable, tensor)
     GTEST_ASSERT_EQ(result.get_value() == expected_result, true);
 
     Tensor<double> expected_A_grad_result(
-            {{{{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
-             {{{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}});
+        {{{{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
+         {{{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}}});
 
     GTEST_ASSERT_EQ(A.get_grad() == expected_A_grad_result, true);
 
     Tensor<double> expected_B_grad_result(
-            {{{{4.0, 4.0, 4.0, 4.0}, {4.0, 4.0, 4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
-             {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}}});
+        {{{{4.0, 4.0, 4.0, 4.0}, {4.0, 4.0, 4.0, 4.0}}, {{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}},
+         {{{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}}, {{4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}, {4.0, 4.0}}}});
 
     GTEST_ASSERT_EQ(B.get_grad() == expected_B_grad_result, true);
 
@@ -345,3 +345,62 @@ TEST(variable, complex)
     Matrix expected_bias = {{0.865}, {0.865}, {0.865}};
     GTEST_ASSERT_EQ(bias1.get_value() == expected_bias, true);
 }
+//
+//TEST(variable, tensor_complex)
+//{
+//    const size_t in_features = 2;
+//    const size_t layer1 = 3;
+//    const size_t classes = 1;
+//    double lr = 0.01;
+//
+//    Variable<Tensor<double>> x({{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}});
+//
+//    Variable<Tensor<double>> y({std::initializer_list<double>{0.0},
+//                                std::initializer_list<double>{0.0},
+//                                std::initializer_list<double>{0.0},
+//                                std::initializer_list<double>{1.0}});
+//    Variable<Tensor<double>> weights1({{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}});
+//    Variable<Tensor<double>> weights2(
+//        {std::initializer_list<double>{1.0},
+//         std::initializer_list<double>{1.0},
+//         std::initializer_list<double>{1.0}});
+//    Variable<Tensor<double>> bias1(
+//        {std::initializer_list<double>{1.0},
+//         std::initializer_list<double>{1.0},
+//         std::initializer_list<double>{1.0}});
+//    Variable<Tensor<double>> bias2 = Tensor{std::initializer_list<double>{1.0}};
+//
+//    Variable y_pred1 = x.dot(weights1) + bias1;
+//
+//    Variable y_pred = y_pred1.dot(weights2) + bias2;
+//
+//    Tensor<double> expected_y_pred(
+//        {std::initializer_list<double>{4.0},
+//         std::initializer_list<double>{7.0},
+//         std::initializer_list<double>{7.0},
+//         std::initializer_list<double>{10.0}}
+//    );
+//
+//    GTEST_ASSERT_EQ(expected_y_pred == y_pred.get_value(), true);
+//
+//    Variable loss = ((y - y_pred) * (y - y_pred)).avg();
+//    GTEST_ASSERT_EQ(loss.get_value() == 48.75, true);
+//    loss.back_propagation();
+//
+//    weights1.set_value(weights1.get_value() - weights1.get_grad() * lr);
+//    bias1.set_value(bias1.get_value() - bias1.get_grad() * lr);
+//
+//    weights2.set_value(weights2.get_value() - weights2.get_grad() * lr);
+//    bias2.set_value(bias2.get_value() - bias2.get_grad() * lr);
+//
+//    Tensor<double> expected_weights1 = {{0.92, 0.92, 0.92}, {0.92, 0.92, 0.92}};
+//    GTEST_ASSERT_EQ(weights1.get_value() == expected_weights1, true);
+//
+//    std::cout << bias2.get_value();
+//    Tensor<double> expected_bias(Shape({3,1}), 0.865);
+//    GTEST_ASSERT_EQ(bias1.get_value() == expected_bias, true);
+//
+//
+//
+//
+//}

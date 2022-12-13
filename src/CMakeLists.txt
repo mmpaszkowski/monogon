@@ -31,7 +31,6 @@ add_library(${MONOGON_PROJECT_NAME} STATIC
 target_link_libraries(${MONOGON_PROJECT_NAME} PUBLIC
         fmt::fmt
         indicators::indicators
-        OpenMP::OpenMP_CXX
     )
 
 target_include_directories(${MONOGON_PROJECT_NAME} PUBLIC ${LIBRARY_INCLUDES})

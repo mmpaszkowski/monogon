@@ -10,7 +10,6 @@ set(LIBRARY_HEADERS
     ../include/monogon/tool/Slice.h
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
-    ../include/monogon/Vector.h
     ../include/monogon/Array.h
     ../include/monogon/Tensor.h
     ../include/monogon/Operation.h

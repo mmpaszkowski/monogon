@@ -5,7 +5,6 @@
 
 #include <monogon/Array.h>
 #include <monogon/Variable.h>
-#include <monogon/Vector.h>
 #include <monogon/layer/Dense.h>
 #include <monogon/layer/Input.h>
 #include <monogon/loss/MSE.h>
@@ -14,7 +13,7 @@
 TEST(layer, layer)
 {
     Variable<Array<double>> x = Array<double>{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
-    Variable<Array<double>> y = Array<double> {{0.0}, {0.0}, {0.0}, {1.0}};
+    Variable<Array<double>> y = Array<double> {std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{1.0}};
 
     MSE mse;
     SGD sgd;

@@ -27,6 +27,7 @@ template <typename T> class Array
     template <template <typename...> typename Container, template <typename...> typename NestedContainer>
     Array(const Container<NestedContainer<value_type>> &container);
     Array(std::initializer_list<std::initializer_list<value_type>> nasted_list);
+    Array(std::initializer_list<value_type> list);
 
     Array(const Array<T> &);
     Array(Array<T> &&);
@@ -43,11 +44,6 @@ template <typename T> class Array
     template <typename U> auto operator-(const Array<U> &rhs) const;
     template <typename U> auto operator*(const Array<U> &rhs) const;
     template <typename U> auto operator/(const Array<U> &rhs) const;
-
-    template <typename U> auto operator+(const Vector<U> &rhs) const;
-    template <typename U> auto operator-(const Vector<U> &rhs) const;
-    template <typename U> auto operator*(const Vector<U> &rhs) const;
-    template <typename U> auto operator/(const Vector<U> &rhs) const;
 
     template <typename U> auto operator+(const U &val) const;
     template <typename U> auto operator-(const U &val) const;
@@ -95,6 +91,18 @@ Array<T>::Array(size_t row, size_t column, const T &value) : data(row * column),
 {
     for (auto &&item : data)
         item = value;
+}
+
+
+template <typename T>
+Array<T>::Array(std::initializer_list<T> list)
+    : row_size(list.size()), column_size(1)
+{
+//#todo make one dimesion
+    this->data.resize(this->row_size * this->column_size);
+    size_t i = 0;
+    for (const auto &item : list)
+        data[i++] = item;
 }
 
 template <typename T>
@@ -216,54 +224,6 @@ template <typename T> template <typename U> auto Array<T>::operator/(const Array
     Array<result_val_type> result(this->row_size, this->column_size);
     result.data = this->data / rhs.data;
 
-    return result;
-}
-
-template <typename T> template <typename U> auto Array<T>::operator+(const Vector<U> &rhs) const
-{
-    assert(rhs.size() == this->get_rows());
-    using result_val_type = decltype(std::declval<T>() + std::declval<U>());
-
-    Array<result_val_type> result(this->get_rows(), this->get_columns());
-    for (size_t i = 0; i < this->get_rows(); i++)
-        for (size_t j = 0; j < this->get_columns(); j++)
-            result(i, j) = this->operator()(i, j) + rhs(i);
-    return result;
-}
-
-template <typename T> template <typename U> auto Array<T>::operator-(const Vector<U> &rhs) const
-{
-    assert(rhs.size() == this->get_rows());
-    using result_val_type = decltype(std::declval<T>() - std::declval<U>());
-
-    Array<result_val_type> result(this->get_rows(), this->get_columns());
-    for (size_t i = 0; i < this->get_rows(); i++)
-        for (size_t j = 0; j < this->get_columns(); j++)
-            result(i, j) = this->operator()(i, j) - rhs(i);
-    return result;
-}
-
-template <typename T> template <typename U> auto Array<T>::operator*(const Vector<U> &rhs) const
-{
-    assert(rhs.size() == this->get_rows());
-    using result_val_type = decltype(std::declval<T>() * std::declval<U>());
-
-    Array<result_val_type> result(this->get_rows(), this->get_columns());
-    for (size_t i = 0; i < this->get_rows(); i++)
-        for (size_t j = 0; j < this->get_columns(); j++)
-            result(i, j) = this->operator()(i, j) * rhs(i);
-    return result;
-}
-
-template <typename T> template <typename U> auto Array<T>::operator/(const Vector<U> &rhs) const
-{
-    assert(rhs.size() == this->get_rows());
-    using result_val_type = decltype(std::declval<T>() / std::declval<U>());
-
-    Array<result_val_type> result(this->get_rows(), this->get_columns());
-    for (size_t i = 0; i < this->get_rows(); i++)
-        for (size_t j = 0; j < this->get_columns(); j++)
-            result(i, j) = this->operator()(i, j) / rhs(i);
     return result;
 }
 

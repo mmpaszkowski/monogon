@@ -6,7 +6,6 @@
 #include <monogon/Array.h>
 #include <monogon/Tensor.h>
 #include <monogon/Variable.h>
-#include <monogon/Vector.h>
 
 TEST(variable, addition)
 {
@@ -134,27 +133,27 @@ TEST(variable, division_derivative)
     GTEST_ASSERT_EQ(c.get_grad(), 0);
 }
 
-TEST(variable, matrix_dot_vector)
-{
-    Array mat_W = {{1.0, 2.0, 3.0, 4.0}, {5.0, 6.0, 7.0, 8.0}, {9.0, 10.0, 11.0, 12.0}};
-
-    Vector vec_x = {{1.0, 2.0, 3.0, 4.0}};
-
-    Variable W = mat_W;
-    Variable x = vec_x;
-
-    Variable y = W.dot(x);
-    Vector expected_y{30.0, 70.0, 110.0};
-    GTEST_ASSERT_EQ(expected_y == y.get_value(), true);
-
-    y.back_propagation();
-
-    Array expected_dW = {{1.0, 2.0, 3.0, 4.0}, {1.0, 2.0, 3.0, 4.0}, {1.0, 2.0, 3.0, 4.0}};
-    GTEST_ASSERT_EQ(W.get_grad() == expected_dW, true);
-
-    Vector expected_dx = {15.0, 18.0, 21.0, 24.0};
-    GTEST_ASSERT_EQ(x.get_grad() == expected_dx, true);
-}
+//TEST(variable, matrix_dot_vector)
+//{
+//    Array mat_W = {{1.0, 2.0, 3.0, 4.0}, {5.0, 6.0, 7.0, 8.0}, {9.0, 10.0, 11.0, 12.0}};
+//
+//    Vector vec_x = {{1.0, 2.0, 3.0, 4.0}};
+//
+//    Variable W = mat_W;
+//    Variable x = vec_x;
+//
+//    Variable y = W.dot(x);
+//    Vector expected_y{30.0, 70.0, 110.0};
+//    GTEST_ASSERT_EQ(expected_y == y.get_value(), true);
+//
+//    y.back_propagation();
+//
+//    Array expected_dW = {{1.0, 2.0, 3.0, 4.0}, {1.0, 2.0, 3.0, 4.0}, {1.0, 2.0, 3.0, 4.0}};
+//    GTEST_ASSERT_EQ(W.get_grad() == expected_dW, true);
+//
+//    Vector expected_dx = {15.0, 18.0, 21.0, 24.0};
+//    GTEST_ASSERT_EQ(x.get_grad() == expected_dx, true);
+//}
 
 TEST(variable, matrix_dot_matrix)
 {
@@ -178,27 +177,27 @@ TEST(variable, matrix_dot_matrix)
     GTEST_ASSERT_EQ(X.get_grad() == expected_dX, true);
 }
 
-TEST(variable, matrix_plus_vector_broadcast)
-{
-    Array mat_W = {{1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}};
-
-    Vector vec_x = {1.0, 2.0, 3.0};
-
-    Variable W = mat_W;
-    Variable x = vec_x;
-
-    Variable y = W + x;
-    Array expected_y = {{2.0, 3.0, 4.0}, {3.0, 4.0, 5.0}, {4.0, 5.0, 6.0}};
-    GTEST_ASSERT_EQ(expected_y == y.get_value(), true);
-
-    y.back_propagation();
-
-    Array expected_dW = {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
-    GTEST_ASSERT_EQ(W.get_grad() == expected_dW, true);
-
-    Vector expected_dx = {3.0, 3.0, 3.0};
-    GTEST_ASSERT_EQ(x.get_grad() == expected_dx, true);
-}
+//TEST(variable, matrix_plus_vector_broadcast)
+//{
+//    Array mat_W = {{1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}};
+//
+//    Vector vec_x = {1.0, 2.0, 3.0};
+//
+//    Variable W = mat_W;
+//    Variable x = vec_x;
+//
+//    Variable y = W + x;
+//    Array expected_y = {{2.0, 3.0, 4.0}, {3.0, 4.0, 5.0}, {4.0, 5.0, 6.0}};
+//    GTEST_ASSERT_EQ(expected_y == y.get_value(), true);
+//
+//    y.back_propagation();
+//
+//    Array expected_dW = {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
+//    GTEST_ASSERT_EQ(W.get_grad() == expected_dW, true);
+//
+//    Vector expected_dx = {3.0, 3.0, 3.0};
+//    GTEST_ASSERT_EQ(x.get_grad() == expected_dx, true);
+//}
 
 TEST(variable, matrix_plus_matrix_broadcast)
 {
@@ -235,17 +234,17 @@ TEST(variable, matrix_max)
     GTEST_ASSERT_EQ(A.get_grad() == expected_grad, true);
 }
 
-TEST(variable, vector_avg)
-{
-    Vector v = {1.0, 2.0, 3.0, 4.0};
-    Variable<Vector<double>> A = v;
-
-    Variable avg = A.avg();
-    avg.back_propagation();
-
-    Vector expected_A = {0.25, 0.25, 0.25, 0.25};
-    GTEST_ASSERT_EQ(A.get_grad() == expected_A, true);
-}
+//TEST(variable, vector_avg)
+//{
+//    Vector v = {1.0, 2.0, 3.0, 4.0};
+//    Variable<Vector<double>> A = v;
+//
+//    Variable avg = A.avg();
+//    avg.back_propagation();
+//
+//    Vector expected_A = {0.25, 0.25, 0.25, 0.25};
+//    GTEST_ASSERT_EQ(A.get_grad() == expected_A, true);
+//}
 
 TEST(variable, matrix_avg)
 {
@@ -317,7 +316,7 @@ TEST(variable, complex)
 
     Variable<Array<double>> x = Array<double>{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
 
-    Variable<Array<double>> y = Array<double>{{0.0}, {0.0}, {0.0}, {1.0}};
+    Variable<Array<double>> y = Array<double>{std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{1.0}};
     Variable<Array<double>> weights1 = Array<double>(in_features, layer1, 1.0);
     Variable<Array<double>> weights2 = Array<double>(layer1, classes, 1.0);
     Variable<Array<double>> bias1 = Array<double>(1, layer1, 1.0);
@@ -326,7 +325,7 @@ TEST(variable, complex)
     Variable y_pred1 = x.dot(weights1) + bias1;
     Variable y_pred = y_pred1.dot(weights2) + bias2;
 
-    Array<double> expected_y_pred = {{4.0}, {7.0}, {7.0}, {10.0}};
+    Array<double> expected_y_pred = {std::initializer_list<double>{4.0}, std::initializer_list<double>{7.0}, std::initializer_list<double>{7.0}, std::initializer_list<double>{10.0}};
     GTEST_ASSERT_EQ(expected_y_pred == y_pred.get_value(), true);
 
     Variable loss = ((y - y_pred) * (y - y_pred)).avg();
@@ -342,7 +341,7 @@ TEST(variable, complex)
     Array expected_weights1 = {{0.92, 0.92, 0.92}, {0.92, 0.92, 0.92}};
     GTEST_ASSERT_EQ(weights1.get_value() == expected_weights1, true);
 
-    Array expected_bias = {{0.865}, {0.865}, {0.865}};
+    Array expected_bias = {std::initializer_list<double>{0.865}, std::initializer_list<double>{0.865}, std::initializer_list<double>{0.865}};
     GTEST_ASSERT_EQ(bias1.get_value() == expected_bias, true);
 }
 //

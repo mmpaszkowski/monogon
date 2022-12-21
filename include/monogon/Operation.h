@@ -294,8 +294,12 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        rhs_type r_result = std::any_cast<lhs_type>(lhs).transpose().dot(std::any_cast<grad_type>(grad));
-        lhs_type l_result = std::any_cast<grad_type>(grad).dot(std::any_cast<rhs_type>(rhs).transpose());
+        grad_type grad_val = std::any_cast<grad_type>(grad);
+        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
+        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+
+        rhs_type r_result = lhs_val.transpose().dot(grad_val);
+        lhs_type l_result = grad_val.dot(rhs_val.transpose());
         return std::tuple(l_result, r_result);
     }
 };

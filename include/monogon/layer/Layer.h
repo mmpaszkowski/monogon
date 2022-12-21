@@ -7,6 +7,8 @@
 
 #include <vector>
 
+template <typename T> class Optimizer;
+
 template <typename T = double> class LayerNode
 {
   public:

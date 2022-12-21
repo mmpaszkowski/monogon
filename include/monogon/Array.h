@@ -9,6 +9,7 @@
 #include <ostream>
 #include <valarray>
 #include <omp.h>
+#include "utils/low_level.h"
 
 template <typename T> class Vector;
 
@@ -338,13 +339,7 @@ template <typename T> template <typename U> auto Array<T>::dot(const Array<U> &r
     using result_val_type = decltype(std::declval<T>() + std::declval<T>() * std::declval<U>());
     Array<result_val_type> result(this->row_size, rhs.column_size);
 
-    size_t i = 0, j = 0, k = 0;
-
-    #pragma omp parallel for private(i,j,k) shared(result,data,rhs)
-    for ( i = 0; i < this->row_size; ++i)
-        for ( k = 0; k < this->column_size; ++k)
-            for ( j = 0; j < rhs.column_size; ++j)
-                    result(i, j) += data[i * this->column_size + k] * rhs(k, j);
+    mat_mul(this->get_rows(), rhs.get_columns(), this->get_columns(), &this->data[0], &rhs.data[0], &result.data[0]);
 
     return result;
 }

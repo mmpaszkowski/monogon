@@ -11,13 +11,13 @@ set(LIBRARY_HEADERS
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Vector.h
-        ../include/monogon/Array.h
+    ../include/monogon/Array.h
     ../include/monogon/Tensor.h
     ../include/monogon/Operation.h
     ../include/monogon/Variable.h
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
-    ../include/monogon/view/ModelRenderer.h ../include/monogon/metric/Metric.h ../include/monogon/metric/CategoricalAccuracy.h)
+    ../include/monogon/view/ModelRenderer.h ../include/monogon/metric/Metric.h ../include/monogon/metric/CategoricalAccuracy.h ../include/monogon/utils/low_level.h low_level.cpp)
 
 set(LIBRARY_INCLUDES
     ../include
@@ -31,6 +31,7 @@ add_library(${MONOGON_PROJECT_NAME} STATIC
 target_link_libraries(${MONOGON_PROJECT_NAME} PUBLIC
         fmt::fmt
         indicators::indicators
+        openblas
     )
 
 target_include_directories(${MONOGON_PROJECT_NAME} PUBLIC ${LIBRARY_INCLUDES})

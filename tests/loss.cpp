@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include <monogon //Array.h>
+#include <monogon/Array.h>
 #include <monogon/Variable.h>
 #include <monogon/Vector.h>
 #include <monogon/loss/MSE.h>

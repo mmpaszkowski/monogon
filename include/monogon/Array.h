@@ -200,9 +200,12 @@ template <typename T> template <typename U> auto Array<T>::operator+(const Array
     Array<result_val_type> result(std::max(this->row_size, rhs.row_size),
                                    std::max(this->column_size, rhs.get_columns()));
 
-    for (size_t i = 0; i < result.get_rows(); i++)
+    size_t i, j;
+    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
+
+    for (i = 0; i < result.get_rows(); i++)
     {
-        for (size_t j = 0; j < result.get_columns(); j++)
+        for (j = 0; j < result.get_columns(); j++)
         {
             result(i, j) = this->operator()(i % this->get_rows(), j % this->get_columns())
                            + rhs(i % rhs.get_rows(), j % rhs.get_columns());

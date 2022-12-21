@@ -299,9 +299,6 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-//        rhs_type r_result = lhs_val.transpose().dot(grad_val);
-//        lhs_type l_result = grad_val.dot(rhs_val.transpose());
-
         lhs_type l_result(grad_val.get_rows(), rhs_val.get_rows());
         rhs_type r_result(lhs_val.get_columns(), grad_val.get_columns());
 

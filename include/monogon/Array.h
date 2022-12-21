@@ -316,7 +316,12 @@ template <typename T> template <typename U> auto Array<T>::dot(const Array<U> &r
     using result_val_type = decltype(std::declval<T>() + std::declval<T>() * std::declval<U>());
     Array<result_val_type> result(this->row_size, rhs.column_size);
 
-    mat_mul(this->get_rows(), rhs.get_columns(), this->get_columns(), &this->data[0], &rhs.data[0], &result.data[0]);
+    mat_mat_mul(this->get_rows(),
+                this->get_columns(),
+                rhs.get_columns(),
+                &this->data[0],
+                &rhs.data[0],
+                &result.data[0]);
 
     return result;
 }

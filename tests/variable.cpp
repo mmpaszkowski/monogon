@@ -171,6 +171,8 @@ TEST(variable, matrix_dot_matrix)
     D.back_propagation();
 
     Array expected_dW = {{6.0, 6.0, 6.0, 6.0}, {6.0, 6.0, 6.0, 6.0}};
+    std::cout << W.get_grad()  << std::endl;
+    std::cout << X.get_grad()  << std::endl;
     GTEST_ASSERT_EQ(W.get_grad() == expected_dW, true);
 
     Array expected_dX = {{2.0, 2.0, 2.0}, {4.0, 4.0, 4.0}, {6.0, 6.0, 6.0}, {8.0, 8.0, 8.0}};

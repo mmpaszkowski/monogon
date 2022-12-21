@@ -12,6 +12,7 @@
 #include <numeric>
 #include <tuple>
 #include <vector>
+#include "utils/low_level.h"
 
 template <typename T>
 class Vector;
@@ -298,8 +299,15 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        rhs_type r_result = lhs_val.transpose().dot(grad_val);
-        lhs_type l_result = grad_val.dot(rhs_val.transpose());
+//        rhs_type r_result = lhs_val.transpose().dot(grad_val);
+//        lhs_type l_result = grad_val.dot(rhs_val.transpose());
+
+        lhs_type l_result(grad_val.get_rows(), rhs_val.get_rows());
+        rhs_type r_result(lhs_val.get_columns(), grad_val.get_columns());
+
+        mat_T_mat_mul(lhs_val.get_columns(), lhs_val.get_rows(), grad_val.get_columns(), &lhs_val(0,0), &grad_val(0,0), &r_result(0,0));
+        mat_mat_T_mul(grad_val.get_rows(), grad_val.get_columns(), rhs_val.get_rows(), &grad_val(0,0), &rhs_val(0,0), &l_result(0,0));
+
         return std::tuple(l_result, r_result);
     }
 };

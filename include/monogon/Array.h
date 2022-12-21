@@ -26,8 +26,12 @@ template <typename T> class Array
 
     template <template <typename...> typename Container, template <typename...> typename NestedContainer>
     Array(const Container<NestedContainer<value_type>> &container);
-    Array(std::initializer_list<std::initializer_list<value_type>> nasted_list);
+
+    template <template <typename...> typename Container>
+    Array(const Container<value_type> &container);
+
     Array(std::initializer_list<value_type> list);
+    Array(std::initializer_list<std::initializer_list<value_type>> nasted_list);
 
     Array(const Array<T> &);
     Array(Array<T> &&);
@@ -117,6 +121,18 @@ Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
 }
 
 template <typename T>
+template <template <typename...> typename Container>
+Array<T>::Array(const Container<T> &container)
+    : row_size(container.size()), column_size(1)
+
+{
+    this->data.resize(this->row_size * this->column_size);
+    size_t i = 0;
+    for (const auto &item : container)
+        data[i++] = item;
+}
+
+template <typename T>
 template <template <typename...> typename Container, template <typename...> typename NestedContainer>
 Array<T>::Array(const Container<NestedContainer<T>> &container)
     : row_size(container.size()), column_size(container.begin()->size())
@@ -127,6 +143,7 @@ Array<T>::Array(const Container<NestedContainer<T>> &container)
         for (size_t j = 0; j < container[i].size(); ++j)
             data[k++] = container[i][j];
 }
+
 
 template <typename T>
 Array<T>::Array(const Array<T> &rhs) : data(rhs.data), row_size(rhs.row_size), column_size(rhs.column_size)

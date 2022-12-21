@@ -17,7 +17,7 @@ template <typename T>
 class Vector;
 
 template <typename T>
-class Matrix;
+class Array;
 
 template <typename T>
 class Tensor;
@@ -47,12 +47,12 @@ struct Init<Vector<U>>
 };
 
 template <typename U>
-struct Init<Matrix<U>>
+struct Init<Array<U>>
 {
     template <typename V>
-    Matrix<U> initialize(const Matrix<U> &val_type, V value) const
+    Array<U> initialize(const Array<U> &val_type, V value) const
     {
-        return Matrix<U>(val_type.get_rows(), val_type.get_columns(), value);
+        return Array<U>(val_type.get_rows(), val_type.get_columns(), value);
     }
 };
 
@@ -88,10 +88,10 @@ struct AddOperation : public Operation
 };
 
 template <typename T, typename U, typename V>
-struct AddOperation<T, Matrix<U>, Vector<V>> : public Operation
+struct AddOperation<T, Array<U>, Vector<V>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
+    using lhs_type = Array<U>;
     using rhs_type = Vector<V>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad,
@@ -114,11 +114,11 @@ struct AddOperation<T, Matrix<U>, Vector<V>> : public Operation
 };
 
 template <typename T, typename U, typename V>
-struct AddOperation<T, Matrix<U>, Matrix<V>> : public Operation
+struct AddOperation<T, Array<U>, Array<V>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
-    using rhs_type = Matrix<V>;
+    using lhs_type = Array<U>;
+    using rhs_type = Array<V>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad,
                                            const std::any &lhs,
@@ -128,8 +128,8 @@ struct AddOperation<T, Matrix<U>, Matrix<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        Matrix<U> l_result = Matrix<U>(lhs_val.get_rows(), lhs_val.get_columns(), 0.0);
-        Matrix<V> r_result = Matrix<V>(rhs_val.get_rows(), rhs_val.get_columns(), 0.0);
+        Array<U> l_result = Array<U>(lhs_val.get_rows(), lhs_val.get_columns(), 0.0);
+        Array<V> r_result = Array<V>(rhs_val.get_rows(), rhs_val.get_columns(), 0.0);
 
         for (size_t i = 0; i < grad_val.get_rows(); i++)
         {
@@ -149,8 +149,8 @@ struct AddOperation<T, Matrix<U>, Matrix<V>> : public Operation
 //struct AddOperation<T, Tensor<U>, Tensor<V>> : public Operation
 //{
 //    using grad_type = T;
-//    using lhs_type = Matrix<U>;
-//    using rhs_type = Matrix<V>;
+//    using lhs_type = Array<U>;
+//    using rhs_type = Array<V>;
 //
 //    std::tuple<std::any, std::any> perform(const std::any &grad,
 //                                           const std::any &lhs,
@@ -160,8 +160,8 @@ struct AddOperation<T, Matrix<U>, Matrix<V>> : public Operation
 //        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
 //        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 //
-//        Matrix<U> l_result = Matrix<U>(lhs_val.get_rows(), lhs_val.get_columns(), 0.0);
-//        Matrix<V> r_result = Matrix<V>(rhs_val.get_rows(), rhs_val.get_columns(), 0.0);
+//        Array<U> l_result = Array<U>(lhs_val.get_rows(), lhs_val.get_columns(), 0.0);
+//        Array<V> r_result = Array<V>(rhs_val.get_rows(), rhs_val.get_columns(), 0.0);
 //
 //        for (size_t i = 0; i < grad_val.get_rows(); i++)
 //        {
@@ -263,10 +263,10 @@ struct DotOperation<T, Vector<U>, Vector<V>> : public Operation
 };
 
 template <typename T, typename U, typename V>
-struct DotOperation<T, Matrix<U>, Vector<V>> : public Operation
+struct DotOperation<T, Array<U>, Vector<V>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
+    using lhs_type = Array<U>;
     using rhs_type = Vector<V>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad,
@@ -278,17 +278,17 @@ struct DotOperation<T, Matrix<U>, Vector<V>> : public Operation
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
         Vector<V> r_result = std::any_cast<lhs_type>(lhs).transpose().dot(std::any_cast<grad_type>(grad));
-        Matrix<V> l_result = std::any_cast<grad_type>(grad).dot(std::any_cast<rhs_type>(rhs).transpose());
+        Array<V> l_result = std::any_cast<grad_type>(grad).dot(std::any_cast<rhs_type>(rhs).transpose());
         return std::tuple(l_result, r_result);
     }
 };
 
 template <typename T, typename U, typename V>
-struct DotOperation<T, Matrix<U>, Matrix<V>> : public Operation
+struct DotOperation<T, Array<U>, Array<V>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
-    using rhs_type = Matrix<V>;
+    using lhs_type = Array<U>;
+    using rhs_type = Array<V>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad,
                                            const std::any &lhs,
@@ -333,10 +333,10 @@ template <typename T, typename U, typename V>
 struct MaxOperation;
 
 template <typename T, typename U, typename V>
-struct MaxOperation<T, Matrix<U>, V> : public Operation
+struct MaxOperation<T, Array<U>, V> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
+    using lhs_type = Array<U>;
     using rhs_type = V;
 
     std::tuple<std::any, std::any> perform(const std::any &grad,
@@ -378,10 +378,10 @@ struct AvgOperation<T, Vector<U>> : public Operation
 };
 
 template <typename T, typename U>
-struct AvgOperation<T, Matrix<U>> : public Operation
+struct AvgOperation<T, Array<U>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
+    using lhs_type = Array<U>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad, const std::any &lhs, const std::any &) const override
     {
@@ -389,7 +389,7 @@ struct AvgOperation<T, Matrix<U>> : public Operation
         //        rhs_type rhs_value = std::any_cast<rhs_type>(rhs);
         grad_type grad_value = std::any_cast<grad_type>(grad);
 
-        Matrix<U> l_result = Matrix<U>(lhs_value.get_rows(),
+        Array<U> l_result = Array<U>(lhs_value.get_rows(),
                                        lhs_value.get_columns(),
                                        1.0 / (lhs_value.get_rows() * lhs_value.get_columns())) *
                              grad_value;
@@ -420,17 +420,17 @@ template <typename T, typename U>
 struct ExpOperation;
 
 template <typename T, typename U>
-struct ExpOperation<T, Matrix<U>> : public Operation
+struct ExpOperation<T, Array<U>> : public Operation
 {
     using grad_type = T;
-    using lhs_type = Matrix<U>;
+    using lhs_type = Array<U>;
 
     std::tuple<std::any, std::any> perform(const std::any &grad, const std::any &lhs, const std::any &) const override
     {
         lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
         grad_type grad_value = std::any_cast<grad_type>(grad);
 
-        Matrix<U> l_result = lhs_value.exp() * grad_value;
+        Array<U> l_result = lhs_value.exp() * grad_value;
         return std::tuple(l_result, std::any());
     }
 };

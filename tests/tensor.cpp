@@ -161,9 +161,9 @@ TEST(tensor, complex)
 //    weights2.set_value(weights2.get_value() - weights2.get_grad() * lr);
 //    bias2.set_value(bias2.get_value() - bias2.get_grad() * lr);
 //
-//    Matrix expected_weights1 = {{0.92, 0.92, 0.92}, {0.92, 0.92, 0.92}};
+//    Array expected_weights1 = {{0.92, 0.92, 0.92}, {0.92, 0.92, 0.92}};
 //    GTEST_ASSERT_EQ(weights1.get_value() == expected_weights1, true);
 //
-//    Matrix expected_bias = {{0.865}, {0.865}, {0.865}};
+//    Array expected_bias = {{0.865}, {0.865}, {0.865}};
 //    GTEST_ASSERT_EQ(bias1.get_value() == expected_bias, true);
 }

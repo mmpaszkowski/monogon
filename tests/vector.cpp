@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
+#include <monogon/Array.h>
 #include <monogon/Vector.h>
-#include <monogon/Matrix.h>
 #include <sstream>
 
 template
@@ -162,12 +162,12 @@ TEST(vector, division) {
 TEST(vector, matrix_addition) {
     Vector v1 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix B = {{1.0, 2.0},
+    Array B = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
-    Matrix C = {{5.0, 6.0},
+    Array C = {{5.0, 6.0},
                 {4.0, 5.0},
                 {3.0, 4.0},
                 {2.0, 3.0}};
@@ -178,12 +178,12 @@ TEST(vector, matrix_addition) {
 TEST(vector, matrix_substraction) {
     Vector v1 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix B = {{1.0, 2.0},
+    Array B = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
-    Matrix C = {{3.0, 2.0},
+    Array C = {{3.0, 2.0},
                 {2.0, 1.0},
                 {1.0, 0.0},
                 {0.0, -1.0}};
@@ -194,12 +194,12 @@ TEST(vector, matrix_substraction) {
 TEST(vector, matrix_multiplication) {
     Vector v1 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix B = {{1.0, 2.0},
+    Array B = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
-    Matrix C = {{4.0, 8.0},
+    Array C = {{4.0, 8.0},
                 {3.0, 6.0},
                 {2.0, 4.0},
                 {1.0, 2.0}};
@@ -210,12 +210,12 @@ TEST(vector, matrix_multiplication) {
 TEST(vector, matrix_division) {
     Vector v1 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix B = {{1.0, 2.0},
+    Array B = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
-    Matrix C = {{4.0, 2.0},
+    Array C = {{4.0, 2.0},
                 {3.0, 1.5},
                 {2.0, 1.0},
                 {1.0, 0.5}};
@@ -266,7 +266,7 @@ TEST(vector, scalar_division) {
 TEST(vector, transposition) {
     Vector v1 = {1.0, 2.0, 3.0, 4.0};
 
-    Matrix C = {{1.0, 2.0, 3.0, 4.0}};
+    Array C = {{1.0, 2.0, 3.0, 4.0}};
 
     GTEST_ASSERT_EQ(v1.transpose() == C, true);
 }
@@ -284,9 +284,9 @@ TEST(vector, dot_vector) {
 TEST(vector, dot_matrix) {
     Vector v1 = {1.0, 2.0, 3.0, 4.0};
 
-    Matrix v2 = {{1.0, 2.0, 3.0, 4.0}};
+    Array v2 = {{1.0, 2.0, 3.0, 4.0}};
 
-    Matrix c = {{1.0, 2.0, 3.0,  4.0},
+    Array c = {{1.0, 2.0, 3.0,  4.0},
                 {2.0, 4.0, 6.0,  8.0},
                 {3.0, 6.0, 9.0,  12.0},
                 {4.0, 8.0, 12.0, 16.0}};

@@ -5,13 +5,13 @@
 #ifndef MATH_ACTIVATIONFUNCTION_H
 #define MATH_ACTIVATIONFUNCTION_H
 
-#include "../Matrix.h"
+#include "../Array.h"
 #include "../Variable.h"
 
 template <typename T> class ActivationFunction
 {
   public:
-    virtual Variable<Matrix<T>> operator()(Variable<Matrix<T>> x) const = 0;
+    virtual Variable<Array<T>> operator()(Variable<Array<T>> x) const = 0;
 };
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
@@ -20,7 +20,7 @@ template <typename T = double> class ReLu : public ActivationFunction<T>
 {
   public:
     ReLu(T alpha = 0.0, T threshold = 0.0, std::optional<T> max_value = std::optional<T>());
-    Variable<Matrix<T>> operator()(Variable<Matrix<T>> x) const override;
+    Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
 
   private:
     T alpha;
@@ -34,7 +34,7 @@ ReLu<T>::ReLu(T alpha, T threshold, std::optional<T> max_value)
 {
 }
 
-template <typename T> Variable<Matrix<T>> ReLu<T>::operator()(Variable<Matrix<T>> x) const
+template <typename T> Variable<Array<T>> ReLu<T>::operator()(Variable<Array<T>> x) const
 {
     return x.max(Variable(T(0.0)));
 }
@@ -44,13 +44,13 @@ template <typename T> Variable<Matrix<T>> ReLu<T>::operator()(Variable<Matrix<T>
 template <typename T = double> class Sigmoid : public ActivationFunction<T>
 {
   public:
-    Variable<Matrix<T>> operator()(Variable<Matrix<T>> x) const override;
+    Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
 
   private:
-    Init<Matrix<T>> initializer;
+    Init<Array<T>> initializer;
 };
 
-template <typename T> Variable<Matrix<T>> Sigmoid<T>::operator()(Variable<Matrix<T>> x) const
+template <typename T> Variable<Array<T>> Sigmoid<T>::operator()(Variable<Array<T>> x) const
 {
     initializer.initialize(x.get_value(), T(1.0));
     return Variable(initializer.initialize(x.get_value(), T(1.0))) / ( Variable(initializer.initialize(x.get_value(), T(1.0))) + (Variable(initializer.initialize(x.get_value(), T(-1.0))) * x).exp());

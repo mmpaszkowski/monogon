@@ -9,7 +9,7 @@
 template <typename T = double> class Initializer
 {
   public:
-    virtual Variable<Matrix<T>> operator()(std::size_t rows, std::size_t cols) const = 0;
+    virtual Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const = 0;
 };
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
@@ -17,11 +17,11 @@ template <typename T = double> class Initializer
 template <typename T = double> class GlorotUniform : public Initializer<T>
 {
 public:
-    Variable<Matrix<T>> operator()(std::size_t rows, std::size_t cols) const override;
+    Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
 };
 
 template <typename T>
-Variable<Matrix<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t cols) const
+Variable<Array<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t cols) const
 {
     T limit = sqrt(6.0 / (static_cast<T>(rows) + static_cast<T>(cols)));
 
@@ -29,7 +29,7 @@ Variable<Matrix<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t c
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(-limit, limit);
 
-    Matrix<T> result(rows, cols);
+    Array<T> result(rows, cols);
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
             result(i, j) = dis(gen);
@@ -40,13 +40,13 @@ Variable<Matrix<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t c
 template <typename T = double> class Ones : public Initializer<T>
 {
 public:
-    Variable<Matrix<T>> operator()(std::size_t rows, std::size_t cols) const override;
+    Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
 };
 
 template <typename T>
-Variable<Matrix<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
+Variable<Array<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
 {
-    Matrix<T> result(rows, cols, 1.0);
+    Array<T> result(rows, cols, 1.0);
     return Variable(result);
 }
 

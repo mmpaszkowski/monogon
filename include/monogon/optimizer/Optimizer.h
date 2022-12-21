@@ -9,7 +9,7 @@
 template <typename T> class Optimizer
 {
   public:
-    virtual void minimize(Variable<Matrix<T>>& weights) const = 0;
+    virtual void minimize(Variable<Array<T>>& weights) const = 0;
 };
 
 #endif //MATH_OPTIMIZER_H

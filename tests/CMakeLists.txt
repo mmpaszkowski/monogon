@@ -2,7 +2,7 @@ set(TEST_MAIN ${MONOGON_PROJECT_NAME}_unit_tests)
 set(TEST_SOURCES
     metric.cpp
     vector.cpp
-    matrix.cpp
+        array.cpp
     tensor.cpp
     one_hot.cpp
     variable.cpp

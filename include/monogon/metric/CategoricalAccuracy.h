@@ -10,7 +10,7 @@
 template <typename T> class CategoricalAccuracy : public Metric<T>
 {
 public:
-    virtual T operator()(const Matrix<T>& y_pred, const Matrix<T>& y) const override{
+    virtual T operator()(const Array<T>& y_pred, const Array<T>& y) const override{
         size_t result = 0;
         for(std::size_t i = 0; i < y.get_rows(); i++)
         {

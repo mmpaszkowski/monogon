@@ -9,7 +9,7 @@
 #include <cassert>
 #include <ostream>
 //---------------------------------------------------- Class body ------------------------------------------------------
-template <typename T> class Matrix;
+template <typename T> class Array;
 
 template <typename T> class Vector
 {
@@ -39,10 +39,10 @@ template <typename T> class Vector
     template <typename U> auto operator*(const Vector<U> &rhs) const;
     template <typename U> auto operator/(const Vector<U> &rhs) const;
 
-    template <typename U> auto operator+(const Matrix<U> &rhs) const;
-    template <typename U> auto operator-(const Matrix<U> &rhs) const;
-    template <typename U> auto operator*(const Matrix<U> &rhs) const;
-    template <typename U> auto operator/(const Matrix<U> &rhs) const;
+    template <typename U> auto operator+(const Array<U> &rhs) const;
+    template <typename U> auto operator-(const Array<U> &rhs) const;
+    template <typename U> auto operator*(const Array<U> &rhs) const;
+    template <typename U> auto operator/(const Array<U> &rhs) const;
 
     template <typename U> auto operator+(const U &val) const;
     template <typename U> auto operator-(const U &val) const;
@@ -52,11 +52,11 @@ template <typename T> class Vector
     template <typename U> bool operator==(const Vector<U> &rhs) const;
     auto operator-() const;
 
-    Matrix<T> transpose() const;
+    Array<T> transpose() const;
     auto avg() const;
 
     template <typename U> auto dot(const Vector<U> &rhs) const;
-    template <typename U> auto dot(const Matrix<U> &rhs) const;
+    template <typename U> auto dot(const Array<U> &rhs) const;
 
   public:
     const std::valarray<value_type> &get_data() const;
@@ -202,12 +202,12 @@ template <typename T> template <typename U> auto Vector<T>::operator/(const Vect
     return result;
 }
 
-template <typename T> template <typename U> auto Vector<T>::operator+(const Matrix<U> &rhs) const
+template <typename T> template <typename U> auto Vector<T>::operator+(const Array<U> &rhs) const
 {
     assert(this->size() == rhs.get_rows());
     using result_val_type = decltype(std::declval<T>() + std::declval<U>());
 
-    Matrix<result_val_type> result(rhs.get_rows(), rhs.get_columns());
+    Array<result_val_type> result(rhs.get_rows(), rhs.get_columns());
     for (size_t i = 0; i < rhs.get_rows(); i++)
         for (size_t j = 0; j < rhs.get_columns(); j++)
             result(i, j) = data[i] + rhs(i, j);
@@ -215,12 +215,12 @@ template <typename T> template <typename U> auto Vector<T>::operator+(const Matr
     return result;
 }
 
-template <typename T> template <typename U> auto Vector<T>::operator-(const Matrix<U> &rhs) const
+template <typename T> template <typename U> auto Vector<T>::operator-(const Array<U> &rhs) const
 {
     assert(this->size() == rhs.get_rows());
     using result_val_type = decltype(std::declval<T>() - std::declval<U>());
 
-    Matrix<result_val_type> result(rhs.get_rows(), rhs.get_columns());
+    Array<result_val_type> result(rhs.get_rows(), rhs.get_columns());
     for (size_t i = 0; i < rhs.get_rows(); i++)
         for (size_t j = 0; j < rhs.get_columns(); j++)
             result(i, j) = data[i] - rhs(i, j);
@@ -228,12 +228,12 @@ template <typename T> template <typename U> auto Vector<T>::operator-(const Matr
     return result;
 }
 
-template <typename T> template <typename U> auto Vector<T>::operator*(const Matrix<U> &rhs) const
+template <typename T> template <typename U> auto Vector<T>::operator*(const Array<U> &rhs) const
 {
     assert(this->size() == rhs.get_rows());
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
 
-    Matrix<result_val_type> result(rhs.get_rows(), rhs.get_columns());
+    Array<result_val_type> result(rhs.get_rows(), rhs.get_columns());
     for (size_t i = 0; i < rhs.get_rows(); i++)
         for (size_t j = 0; j < rhs.get_columns(); j++)
             result(i, j) = data[i] * rhs(i, j);
@@ -241,12 +241,12 @@ template <typename T> template <typename U> auto Vector<T>::operator*(const Matr
     return result;
 }
 
-template <typename T> template <typename U> auto Vector<T>::operator/(const Matrix<U> &rhs) const
+template <typename T> template <typename U> auto Vector<T>::operator/(const Array<U> &rhs) const
 {
     assert(this->size() == rhs.get_rows());
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
 
-    Matrix<result_val_type> result(rhs.get_rows(), rhs.get_columns());
+    Array<result_val_type> result(rhs.get_rows(), rhs.get_columns());
     for (size_t i = 0; i < rhs.get_rows(); i++)
         for (size_t j = 0; j < rhs.get_columns(); j++)
             result(i, j) = data[i] / rhs(i, j);
@@ -305,9 +305,10 @@ template <typename T> template <typename U> bool Vector<T>::operator==(const Vec
 
 //------------------------------------------------------ Methods -------------------------------------------------------
 
-template <typename T> Matrix<T> Vector<T>::transpose() const
+template <typename T>
+Array<T> Vector<T>::transpose() const
 {
-    Matrix<T> result(1, this->size());
+    Array<T> result(1, this->size());
 
     for (size_t i = 0; i < this->size(); i++)
         result(0, i) = this->data[i];
@@ -324,10 +325,10 @@ template <typename T> template <typename U> auto Vector<T>::dot(const Vector<U> 
     return result;
 }
 
-template <typename T> template <typename U> auto Vector<T>::dot(const Matrix<U> &rhs) const
+template <typename T> template <typename U> auto Vector<T>::dot(const Array<U> &rhs) const
 {
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
-    Matrix<result_val_type> result(this->size(), rhs.get_columns());
+    Array<result_val_type> result(this->size(), rhs.get_columns());
 
     for (size_t i = 0; i < this->size(); ++i)
         for (size_t j = 0; j < rhs.get_columns(); ++j)

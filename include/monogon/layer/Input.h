@@ -18,7 +18,7 @@ template <typename T = double> class InputNode : public LayerNode<T>
 
     std::vector<size_t> get_shape() const override;
 
-    Variable<Matrix<T>> feed_forward(const Variable<Matrix<T>>& X) override;
+    Variable<Array<T>> feed_forward(const Variable<Array<T>>& X) override;
 
     void update_weights(const Optimizer<T>& optimizer) override;
 
@@ -45,7 +45,7 @@ template <typename T> std::vector<size_t> InputNode<T>::get_shape() const
     return this->shape;
 }
 
-template <typename T> Variable<Matrix<T>> InputNode<T>::feed_forward(const Variable<Matrix<T>>& X)
+template <typename T> Variable<Array<T>> InputNode<T>::feed_forward(const Variable<Array<T>>& X)
 {
     for (auto &&next_layer : next_layers)
     {
@@ -72,7 +72,7 @@ template <typename T = double> class Input : public Layer<T>
     std::shared_ptr<LayerNode<T>> get_node() const override;
 
   public:
-    Variable<Matrix<T>> feed_forward(const Variable<Matrix<T>>& X) override;
+    Variable<Array<T>> feed_forward(const Variable<Array<T>>& X) override;
     void update_weights(const Optimizer<T>& optimizer) override;
     void update_weights_chain(const Optimizer<T>& optimizer) override;
 
@@ -86,7 +86,7 @@ template <typename T> Input<T>::Input(std::vector<size_t> shape):
 
 }
 
-template <typename T> Variable<Matrix<T>> Input<T>::feed_forward(const Variable<Matrix<T>> &X)
+template <typename T> Variable<Array<T>> Input<T>::feed_forward(const Variable<Array<T>> &X)
 {
     return node->feed_forward(X);
 }

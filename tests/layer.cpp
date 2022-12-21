@@ -3,18 +3,18 @@
 //
 #include <gtest/gtest.h>
 
-#include <monogon/loss/MSE.h>
-#include <monogon/optimizer/SGD.h>
-#include <monogon/Matrix.h>
+#include <monogon/Array.h>
 #include <monogon/Variable.h>
 #include <monogon/Vector.h>
 #include <monogon/layer/Dense.h>
 #include <monogon/layer/Input.h>
+#include <monogon/loss/MSE.h>
+#include <monogon/optimizer/SGD.h>
 
 TEST(layer, layer)
 {
-    Variable<Matrix<double>> x = Matrix<double>{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
-    Variable<Matrix<double>> y = Matrix<double> {{0.0}, {0.0}, {0.0}, {1.0}};
+    Variable<Array<double>> x = Array<double>{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}};
+    Variable<Array<double>> y = Array<double> {{0.0}, {0.0}, {0.0}, {1.0}};
 
     MSE mse;
     SGD sgd;
@@ -29,7 +29,7 @@ TEST(layer, layer)
     input.update_weights_chain(sgd);
 
     Variable y_pred = input.feed_forward(x).get_value();
-//    Matrix expected_y_pred = {{2.6944750000000002}, {4.6402750000000008}, {4.6402750000000008}, {6.586075000000001}};
+//    Array expected_y_pred = {{2.6944750000000002}, {4.6402750000000008}, {4.6402750000000008}, {6.586075000000001}};
 
 //    GTEST_ASSERT_EQ(y_pred.get_value() == expected_y_pred, true);
 }

@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <monogon/Matrix.h>
+#include <monogon/Array.h>
 #include <monogon/Vector.h>
 
-TEST(matrix, initializer_list_constructor)
+TEST(array, initializer_list_constructor)
 {
-    Matrix M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
+    Array M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
     std::valarray result = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
     for (std::size_t i = 0; i<result.size(); i++)
@@ -17,10 +17,10 @@ TEST(matrix, initializer_list_constructor)
 }
 
 
-TEST(matrix, container_constructor)
+TEST(array, container_constructor)
 {
     std::vector<std::vector<double>> vec = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
-    Matrix M(vec);
+    Array M(vec);
     std::valarray result = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
     for (std::size_t i = 0; i<result.size(); i++)
@@ -32,9 +32,9 @@ TEST(matrix, container_constructor)
     GTEST_ASSERT_EQ(M.get_columns(), 3);
 }
 
-TEST(matrix, subscription)
+TEST(array, subscription)
 {
-    Matrix M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
+    Array M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
 
     GTEST_ASSERT_EQ(M(0, 0), 1.0);
     GTEST_ASSERT_EQ(M(0, 1), 2.0);
@@ -44,9 +44,9 @@ TEST(matrix, subscription)
     GTEST_ASSERT_EQ(M(1, 2), 6.0);
 }
 
-TEST(matrix, const_subscription)
+TEST(array, const_subscription)
 {
-    const Matrix M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
+    const Array M = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
 
     GTEST_ASSERT_EQ(M(0, 0), 1.0);
     GTEST_ASSERT_EQ(M(0, 1), 2.0);
@@ -56,22 +56,22 @@ TEST(matrix, const_subscription)
     GTEST_ASSERT_EQ(M(1, 2), 6.0);
 }
 
-TEST(matrix, unary_minus)
+TEST(array, unary_minus)
 {
-    Matrix A = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
-    Matrix B = {{-1.0, -2.0, -3.0}, {-4.0, -5.0, -6.0}};
+    Array A = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
+    Array B = {{-1.0, -2.0, -3.0}, {-4.0, -5.0, -6.0}};
     GTEST_ASSERT_EQ(-A==B, true);
 }
 
-TEST(matrix, comparison_equal)
+TEST(array, comparison_equal)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -80,15 +80,15 @@ TEST(matrix, comparison_equal)
     GTEST_ASSERT_EQ(A==B, true);
 }
 
-TEST(matrix, comparison_not_equal)
+TEST(array, comparison_not_equal)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 13.0}
@@ -97,21 +97,21 @@ TEST(matrix, comparison_not_equal)
     GTEST_ASSERT_EQ(A==B, false);
 }
 
-TEST(matrix, addition)
+TEST(array, addition)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {12.0, 11.0, 10.0, 9.0},
             {8.0, 7.0, 6.0, 5.0},
             {4.0, 3.0, 2.0, 1.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {13.0, 13.0, 13.0, 13.0},
             {13.0, 13.0, 13.0, 13.0},
             {13.0, 13.0, 13.0, 13.0}
@@ -120,21 +120,21 @@ TEST(matrix, addition)
     GTEST_ASSERT_EQ(A+B==C, true);
 }
 
-TEST(matrix, substraction)
+TEST(array, substraction)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {13.0, 13.0, 13.0, 13.0},
             {13.0, 13.0, 13.0, 13.0},
             {13.0, 13.0, 13.0, 13.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {12.0, 11.0, 10.0, 9.0},
             {8.0, 7.0, 6.0, 5.0},
             {4.0, 3.0, 2.0, 1.0}
@@ -143,21 +143,21 @@ TEST(matrix, substraction)
     GTEST_ASSERT_EQ(A-B==C, true);
 }
 
-TEST(matrix, multiplication)
+TEST(array, multiplication)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {1.0, 4.0, 9.0, 16.0},
             {25.0, 36.0, 49.0, 64.0},
             {81.0, 100.0, 121.0, 144.0}
@@ -166,21 +166,21 @@ TEST(matrix, multiplication)
     GTEST_ASSERT_EQ(A*B==C, true);
 }
 
-TEST(matrix, division)
+TEST(array, division)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 4.0, 9.0, 16.0},
             {25.0, 36.0, 49.0, 64.0},
             {81.0, 100.0, 121.0, 144.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -189,16 +189,16 @@ TEST(matrix, division)
     GTEST_ASSERT_EQ(A/B==C, true);
 }
 
-TEST(matrix, vector_addition)
+TEST(array, vector_addition)
 {
-    Matrix A = {{1.0, 2.0},
+    Array A = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
     Vector v2 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix C = {{5.0, 6.0},
+    Array C = {{5.0, 6.0},
                 {4.0, 5.0},
                 {3.0, 4.0},
                 {2.0, 3.0}};
@@ -206,16 +206,16 @@ TEST(matrix, vector_addition)
     GTEST_ASSERT_EQ(A+v2==C, true);
 }
 
-TEST(matrix, vector_substraction)
+TEST(array, vector_substraction)
 {
-    Matrix A = {{1.0, 2.0},
+    Array A = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
     Vector v2 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix C = {{-3.0, -2.0},
+    Array C = {{-3.0, -2.0},
                 {-2.0, -1.0},
                 {-1.0, 0.0},
                 {0.0, 1.0}};
@@ -223,16 +223,16 @@ TEST(matrix, vector_substraction)
     GTEST_ASSERT_EQ(A-v2==C, true);
 }
 
-TEST(matrix, vector_multiplication)
+TEST(array, vector_multiplication)
 {
-    Matrix A = {{1.0, 2.0},
+    Array A = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
     Vector v2 = {4.0, 3.0, 2.0, 1.0};
 
-    Matrix C = {{4.0, 8.0},
+    Array C = {{4.0, 8.0},
                 {3.0, 6.0},
                 {2.0, 4.0},
                 {1.0, 2.0}};
@@ -240,16 +240,16 @@ TEST(matrix, vector_multiplication)
     GTEST_ASSERT_EQ(A*v2==C, true);
 }
 
-TEST(matrix, vector_division)
+TEST(array, vector_division)
 {
-    Matrix A = {{1.0, 2.0},
+    Array A = {{1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0},
                 {1.0, 2.0}};
 
     Vector v2 = {8.0, 4.0, 2.0, 1.0};
 
-    Matrix C = {{0.125, 0.25},
+    Array C = {{0.125, 0.25},
                 {0.25, 0.5},
                 {0.5, 1.0},
                 {1.0, 2.0}};
@@ -257,9 +257,9 @@ TEST(matrix, vector_division)
     GTEST_ASSERT_EQ(A/v2==C, true);
 }
 
-TEST(matrix, scalar_addition)
+TEST(array, scalar_addition)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -267,7 +267,7 @@ TEST(matrix, scalar_addition)
 
     double b = 2.0;
 
-    Matrix<double> C = {
+    Array<double> C = {
             {3.0, 4.0, 5.0, 6.0},
             {7.0, 8.0, 9.0, 10.0},
             {11.0, 12.0, 13.0, 14.0}
@@ -277,9 +277,9 @@ TEST(matrix, scalar_addition)
 }
 
 
-TEST(matrix, scalar_substraction)
+TEST(array, scalar_substraction)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {3.0, 4.0, 5.0, 6.0},
             {7.0, 8.0, 9.0, 10.0},
             {11.0, 12.0, 13.0, 14.0}
@@ -287,7 +287,7 @@ TEST(matrix, scalar_substraction)
 
     double b = 2.0;
 
-    Matrix<double> C = {
+    Array<double> C = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -298,9 +298,9 @@ TEST(matrix, scalar_substraction)
 
 
 
-TEST(matrix, scalar_multiplication)
+TEST(array, scalar_multiplication)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -308,7 +308,7 @@ TEST(matrix, scalar_multiplication)
 
     double b = 2.0;
 
-    Matrix<double> C = {
+    Array<double> C = {
             {2.0, 4.0, 6.0, 8.0},
             {10.0, 12.0, 14.0, 16.0},
             {18.0, 20.0, 22.0, 24.0}
@@ -318,9 +318,9 @@ TEST(matrix, scalar_multiplication)
 }
 
 
-TEST(matrix, scalar_division)
+TEST(array, scalar_division)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {2.0, 4.0, 6.0, 8.0},
             {10.0, 12.0, 14.0, 16.0},
             {18.0, 20.0, 22.0, 24.0}
@@ -328,7 +328,7 @@ TEST(matrix, scalar_division)
 
     double b = 2.0;
 
-    Matrix<double> C = {
+    Array<double> C = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
@@ -337,15 +337,15 @@ TEST(matrix, scalar_division)
     GTEST_ASSERT_EQ(A/b==C, true);
 }
 
-TEST(matrix, transposition)
+TEST(array, transposition)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {1.0, 5.0, 9.0},
             {2.0, 6.0, 10.0},
             {3.0, 7.0, 11.0},
@@ -355,22 +355,22 @@ TEST(matrix, transposition)
     GTEST_ASSERT_EQ(A.transpose() == C, true);
 }
 
-TEST(matrix, dot_matrix)
+TEST(array, dot_matrix)
 {
-    Matrix<double> A = {
+    Array<double> A = {
             {1.0, 2.0, 3.0, 4.0},
             {5.0, 6.0, 7.0, 8.0},
             {9.0, 10.0, 11.0, 12.0}
     };
 
-    Matrix<double> B = {
+    Array<double> B = {
             {1.0, 2.0, 3.0},
             {4.0, 5.0, 6.0},
             {7.0, 8.0, 9.0},
             {10.0, 11.0, 12.0}
     };
 
-    Matrix<double> C = {
+    Array<double> C = {
             {70.0, 80.0, 90.0},
             {158.0, 184.0, 210.0},
             {246.0, 288.0, 330.0}
@@ -379,9 +379,9 @@ TEST(matrix, dot_matrix)
     GTEST_ASSERT_EQ(C==A.dot(B), true);
 }
 
-TEST(matrix, dot_vector)
+TEST(array, dot_vector)
 {
-    Matrix A = {
+    Array A = {
         {1.0, 2.0, 3.0},
         {4.0, 5.0, 6.0},
         {7.0, 8.0, 9.0},
@@ -394,16 +394,16 @@ TEST(matrix, dot_vector)
     GTEST_ASSERT_EQ(v3==A.dot(v2), true);
 }
 
-TEST(matrix, max)
+TEST(array, max)
 {
-    Matrix A = {
+    Array A = {
         {1.0, 2.0, 3.0},
         {4.0, 5.0, 6.0},
         {7.0, 8.0, 9.0},
         {10.0, 11.0, 12.0}
     };
 
-    Matrix expected_result = {
+    Array expected_result = {
         {5.0, 5.0, 5.0},
         {5.0, 5.0, 6.0},
         {7.0, 8.0, 9.0},
@@ -412,9 +412,9 @@ TEST(matrix, max)
     GTEST_ASSERT_EQ(A.max(5.0) == expected_result, true);
 }
 
-TEST(matrix, avg)
+TEST(array, avg)
 {
-    Matrix A = {
+    Array A = {
         {1.0, 2.0, 3.0},
         {4.0, 5.0, 6.0},
         {7.0, 8.0, 9.0},

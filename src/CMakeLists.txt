@@ -11,7 +11,7 @@ set(LIBRARY_HEADERS
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Vector.h
-    ../include/monogon/Matrix.h
+        ../include/monogon/Array.h
     ../include/monogon/Tensor.h
     ../include/monogon/Operation.h
     ../include/monogon/Variable.h

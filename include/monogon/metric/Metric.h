@@ -5,13 +5,13 @@
 #ifndef MONOGON_METRIC_H
 #define MONOGON_METRIC_H
 
+#include "../Array.h"
 #include <cstddef>
-#include "../Matrix.h"
 
 template <typename T> class Metric
 {
 public:
-    virtual T operator()(const Matrix<T>& y_pred, const Matrix<T>& y) const = 0;
+    virtual T operator()(const Array<T>& y_pred, const Array<T>& y) const = 0;
 };
 
 

@@ -24,8 +24,8 @@ template <typename T = double> class Model
 
     template <template <typename> typename O, template <typename> typename L>
     void compile(const O<T> &optimizer, const L<T> &loss);
-    virtual void fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10, std::size_t batch_size=32);
-    virtual Matrix<T> predict(Matrix<T> x);
+    virtual void fit(const Array<T>& x, const Array<T>& y, std::size_t epochs = 10, std::size_t batch_size=32);
+    virtual Array<T> predict(Array<T> x);
 
   private:
     std::shared_ptr<Layer<T>> begin;
@@ -51,7 +51,7 @@ void Model<T>::compile(const O<T> &optimizer, const L<T> &loss)
     this->loss = std::make_shared<L<T>>(loss);
 }
 
-template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y, size_t epochs, std::size_t batch_size)
+template <typename T> void Model<T>::fit(const Array<T>& x, const Array<T>& y, size_t epochs, std::size_t batch_size)
 {
     Slice slicer;
 
@@ -65,8 +65,8 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
         modelRenderer.render_epoch(i+1, epochs);
         for(size_t j = 0; j < x.get_rows(); j+=batch_size)
         {
-            Matrix sub_x = slicer(x, j, j+batch_size);
-            Matrix sub_y = slicer(y, j, j+batch_size);
+            Array sub_x = slicer(x, j, j+batch_size);
+            Array sub_y = slicer(y, j, j+batch_size);
             Variable y_pred = begin->feed_forward(sub_x);
             Variable loss = (*this->loss)(y_pred, sub_y);
             loss.back_propagation();
@@ -82,7 +82,8 @@ template <typename T> void Model<T>::fit(const Matrix<T>& x, const Matrix<T>& y,
     }
 }
 
-template <typename T> Matrix<T> Model<T>::predict(Matrix<T> x)
+template <typename T>
+Array<T> Model<T>::predict(Array<T> x)
 {
     return begin->feed_forward(x).get_value();
 }

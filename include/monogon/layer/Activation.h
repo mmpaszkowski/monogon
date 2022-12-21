@@ -5,9 +5,9 @@
 #ifndef MATH_ACTIVATION_H
 #define MATH_ACTIVATION_H
 
-#include "../Matrix.h"
-#include "Layer.h"
+#include "../Array.h"
 #include "../activation/ActivationFunction.h"
+#include "Layer.h"
 
 #include <vector>
 
@@ -23,7 +23,7 @@ template <typename T> class ActivationNode : public LayerNode<T>
   public:
     void add_next_layer(std::shared_ptr<LayerNode<T>> layer) override;
     std::vector<size_t> get_shape() const override;
-    Variable<Matrix<T>> feed_forward(const Variable<Matrix<T>> &X) override;
+    Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
@@ -67,7 +67,7 @@ template <typename T> std::vector<size_t> ActivationNode<T>::get_shape() const
     return this->shape;
 }
 
-template <typename T> Variable<Matrix<T>> ActivationNode<T>::feed_forward(const Variable<Matrix<T>> &X)
+template <typename T> Variable<Array<T>> ActivationNode<T>::feed_forward(const Variable<Array<T>> &X)
 {
     for (auto &&next_layer : next_layers)
     {
@@ -97,7 +97,7 @@ template <typename T = double> class Activation : public Layer<T>
     Activation(const Activation &dense);
 
   public:
-    Variable<Matrix<T>> feed_forward(const Variable<Matrix<T>> &X) override;
+    Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     std::shared_ptr<LayerNode<T>> get_node() const override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
@@ -129,7 +129,7 @@ template <typename T> Activation<T>::Activation(const Activation<T> &activation)
 
 //---------------------------------------------------- Interface -------------------------------------------------------
 
-template <typename T> Variable<Matrix<T>> Activation<T>::feed_forward(const Variable<Matrix<T>> &X)
+template <typename T> Variable<Array<T>> Activation<T>::feed_forward(const Variable<Array<T>> &X)
 {
     return node->feed_forward(X);
 }

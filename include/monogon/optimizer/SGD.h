@@ -1,35 +1,37 @@
 //
-// Created by noname on 21.10.22.
+// Created by Mateusz Paszkowski on 21.10.22.
 //
 
-#ifndef MATH_SGD_H
-#define MATH_SGD_H
+#ifndef MONOGON_SGD_H
+#define MONOGON_SGD_H
 
 #include "../Array.h"
 #include "../Variable.h"
 #include "Optimizer.h"
 #include <iostream>
 
-template <typename T = double> class SGD : public Optimizer<T>
+template <typename T = double>
+class SGD : public Optimizer<T>
 {
-  public:
+public:
     SGD(T learning_rate = 0.01, T momentum = 0.0, bool nesterov = false);
 
-    void minimize(Variable<Array<T>>& weights) const override;
+    void minimize(Variable<Array<T>> &weights) const override;
 
-  private:
+private:
     T learning_rate;
     T momentum;
-    bool nesterov;
+    bool nesterov; //# Todo
 };
 
 template <typename T>
-SGD<T>::SGD(T learning_rate, T momentum, bool nesterov)
-    : learning_rate(learning_rate), momentum(momentum), nesterov(nesterov)
+SGD<T>::SGD(T lr, T m, bool n)
+    : learning_rate(lr), momentum(m), nesterov(n)
 {
 }
 
-template <typename T> void SGD<T>::minimize(Variable<Array<T>>& weights) const
+template <typename T>
+void SGD<T>::minimize(Variable<Array<T>> &weights) const
 {
 
     if (momentum == 0.0)
@@ -42,4 +44,4 @@ template <typename T> void SGD<T>::minimize(Variable<Array<T>>& weights) const
     }
 }
 
-#endif //MATH_SGD_H
+#endif //MONOGON_SGD_H

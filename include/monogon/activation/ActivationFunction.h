@@ -1,28 +1,39 @@
 //
-// Created by noname on 01.11.22.
+// Created by Mateusz Paszkowski on 01.11.22.
 //
 
-#ifndef MATH_ACTIVATIONFUNCTION_H
-#define MATH_ACTIVATIONFUNCTION_H
+#ifndef MONOGON_ACTIVATION_FUNCTION_H
+#define MONOGON_ACTIVATION_FUNCTION_H
 
 #include "../Array.h"
 #include "../Variable.h"
 
-template <typename T> class ActivationFunction
+template <typename T>
+class ActivationFunction
 {
-  public:
+public:
     virtual Variable<Array<T>> operator()(Variable<Array<T>> x) const = 0;
 };
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class ReLu : public ActivationFunction<T>
+template <typename T = double>
+class ReLu : public ActivationFunction<T>
 {
-  public:
+public:
     ReLu(T alpha = 0.0, T threshold = 0.0, std::optional<T> max_value = std::optional<T>());
+    ReLu(const ReLu<T> &reLu) = default;
+    ReLu(ReLu<T> &&reLu) noexcept = default;
+
+    ReLu &operator=(const ReLu<T> &reLu) = default;
+    ReLu &operator=(ReLu<T> &&reLu) noexcept = default;
+
+    ~ReLu() = default;
+
+public:
     Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
 
-  private:
+private:
     T alpha;
     std::optional<T> max_value;
     T threshold;
@@ -34,26 +45,31 @@ ReLu<T>::ReLu(T alpha, T threshold, std::optional<T> max_value)
 {
 }
 
-template <typename T> Variable<Array<T>> ReLu<T>::operator()(Variable<Array<T>> x) const
+template <typename T>
+Variable<Array<T>> ReLu<T>::operator()(Variable<Array<T>> x) const
 {
     return x.max(Variable(T(0.0)));
 }
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class Sigmoid : public ActivationFunction<T>
+template <typename T = double>
+class Sigmoid : public ActivationFunction<T>
 {
-  public:
+public:
     Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
 
-  private:
+private:
     Init<Array<T>> initializer;
 };
 
-template <typename T> Variable<Array<T>> Sigmoid<T>::operator()(Variable<Array<T>> x) const
+template <typename T>
+Variable<Array<T>> Sigmoid<T>::operator()(Variable<Array<T>> x) const
 {
     initializer.initialize(x.get_value(), T(1.0));
-    return Variable(initializer.initialize(x.get_value(), T(1.0))) / ( Variable(initializer.initialize(x.get_value(), T(1.0))) + (Variable(initializer.initialize(x.get_value(), T(-1.0))) * x).exp());
+    return Variable(initializer.initialize(x.get_value(), T(1.0))) /
+           (Variable(initializer.initialize(x.get_value(), T(1.0))) +
+            (Variable(initializer.initialize(x.get_value(), T(-1.0))) * x).exp());
 }
 
-#endif //MATH_ACTIVATIONFUNCTION_H
+#endif //MONOGON_ACTIVATION_FUNCTION_H

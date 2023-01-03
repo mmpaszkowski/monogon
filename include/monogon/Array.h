@@ -24,20 +24,22 @@ template <typename T> class Array
     Array(size_t row, size_t column);
     Array(size_t row, size_t column, const T &value);
 
+    ~Array() = default;
+
     template <template <typename...> typename Container, template <typename...> typename NestedContainer>
-    Array(const Container<NestedContainer<value_type>> &container);
+    explicit Array(const Container<NestedContainer<value_type>> &container);
 
     template <template <typename...> typename Container>
-    Array(const Container<value_type> &container);
+    explicit Array(const Container<value_type> &container);
 
     Array(std::initializer_list<value_type> list);
     Array(std::initializer_list<std::initializer_list<value_type>> nasted_list);
 
     Array(const Array<T> &);
-    Array(Array<T> &&);
+    Array(Array<T> &&) noexcept;
 
     Array<T> &operator=(const Array<T> &);
-    Array<T> &operator=(const Array<T> &&);
+    Array<T> &operator=(Array<T> &&) noexcept;
 
   public:
     value_type &operator()(std::size_t row, std::size_t column);
@@ -151,7 +153,7 @@ Array<T>::Array(const Array<T> &rhs) : data(rhs.data), row_size(rhs.row_size), c
 }
 
 template <typename T>
-Array<T>::Array(Array<T> &&rhs)
+Array<T>::Array(Array<T> &&rhs) noexcept
     : data(std::move(rhs.data)), row_size(std::move(rhs.row_size)), column_size(std::move(rhs.column_size))
 {
 }
@@ -166,7 +168,7 @@ Array<T> &Array<T>::operator=(const Array<T> &rhs)
 }
 
 template <typename T>
-Array<T> &Array<T>::operator=(const Array<T> &&rhs)
+Array<T> &Array<T>::operator=(Array<T> &&rhs) noexcept
 {
     this->data = std::move(rhs.data);
     this->column_size = std::move(rhs.column_size);
@@ -200,12 +202,10 @@ template <typename T> template <typename U> auto Array<T>::operator+(const Array
     Array<result_val_type> result(std::max(this->row_size, rhs.row_size),
                                    std::max(this->column_size, rhs.get_columns()));
 
-    size_t i, j;
-    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
-
-    for (i = 0; i < result.get_rows(); i++)
+//    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
+    for (size_t i = 0; i < result.get_rows(); i++)
     {
-        for (j = 0; j < result.get_columns(); j++)
+        for (size_t j = 0; j < result.get_columns(); j++)
         {
             result(i, j) = this->operator()(i % this->get_rows(), j % this->get_columns())
                            + rhs(i % rhs.get_rows(), j % rhs.get_columns());
@@ -368,7 +368,7 @@ template <typename T> auto Array<T>::avg() const
     for (const auto &item : data)
         sum += item;
 
-    return sum / data.size();
+    return sum / static_cast<T>(data.size());
 }
 
 //----------------------------------------------------- Accessors ------------------------------------------------------

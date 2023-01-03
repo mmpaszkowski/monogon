@@ -7,21 +7,21 @@
 
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
-Index::Index(const std::vector<value_type> &data) : __data(data), __shape()
+Index::Index(const std::vector<value_type> &d) : data(d), shape()
 {
 }
 
-Index::Index(std::vector<value_type> &&data) noexcept : __data(std::move(data)), __shape()
+Index::Index(std::vector<value_type> &&d) noexcept : data(std::move(d)), shape()
 {
 }
 
-Index::Index(Shape shape) : __data(shape.size()), __shape(shape)
+Index::Index(Shape s) : data(s.size()), shape(s)
 {
 }
 
 Index::Index(const Index &index) = default;
 
-Index::Index(Index &&index) noexcept : __data(std::move(index.__data)), __shape(std::move(index.__shape))
+Index::Index(Index &&index) noexcept : data(std::move(index.data)), shape(std::move(index.shape))
 {
 }
 
@@ -33,49 +33,49 @@ Index &Index::operator=(const Index &rhs) = default;
 
 Index &Index::operator=(Index &&rhs) noexcept
 {
-    this->__data = std::move(rhs.__data);
-    this->__shape = std::move(rhs.__shape);
+    this->data = std::move(rhs.data);
+    this->shape = std::move(rhs.shape);
     return *this;
 }
 
 Index::value_type &Index::operator[](value_type i)
 {
-    return __data[i];
+    return data[i];
 }
 
 Index::const_reference Index::operator[](value_type i) const
 {
-    return __data[i];
+    return data[i];
 }
 
 Index::value_type &Index::operator()(long long i)
 {
     if (i < 0)
-        return __data[__data.size() + static_cast<size_type>(i)];
+        return data[data.size() + static_cast<size_type>(i)];
     else
-        return __data[static_cast<size_type>(i)];
+        return data[static_cast<size_type>(i)];
 }
 
 Index::const_reference Index::operator()(long long i) const
 {
     if (i < 0)
-        return __data[__data.size() + static_cast<size_type>(i)];
+        return data[data.size() + static_cast<size_type>(i)];
     else
-        return __data[static_cast<size_type>(i)];
+        return data[static_cast<size_type>(i)];
 }
 
 Index &Index::operator++()
 {
-    assert(__shape);
+    assert(shape);
 
-    auto shape_it = __shape->rbegin();
-    for (auto index_it = __data.rbegin(); index_it != __data.rend(); ++index_it, ++shape_it)
+    auto shape_it = shape->rbegin();
+    for (auto index_it = data.rbegin(); index_it != data.rend(); ++index_it, ++shape_it)
     {
         (*index_it)++;
 
         if (*index_it >= *shape_it)
         {
-            if (shape_it + 1 == __shape->rend())
+            if (shape_it + 1 == shape->rend())
                 break;
             (*index_it) = 0;
         }
@@ -87,67 +87,67 @@ Index &Index::operator++()
 
 bool Index::operator<(const Index &index)
 {
-    return __data < index.__data;
+    return data < index.data;
 }
 
 
-Index Index::operator%(const Shape &shape)
+Index Index::operator%(const Shape &s)
 {
     std::vector<size_t> result;
 
-    for(size_t i = 0; i < __data.size(); i++)
+    for (size_t i = 0; i < data.size(); i++)
     {
-        result.push_back(__data[i] % shape[i]);
+        result.push_back(data[i] % s[i]);
     }
 
-    return Index(result);
+    return result;
 }
 
 //----------------------------------------------------- Methods --------------------------------------------------------
 
 Index::value_type Index::size() const
 {
-    return __data.size();
+    return data.size();
 }
 
 Index::iterator Index::begin() noexcept
 {
-    return __data.begin();
+    return data.begin();
 }
 
 Index::const_iterator Index::begin() const noexcept
 {
-    return __data.begin();
+    return data.begin();
 }
 
 Index::iterator Index::end() noexcept
 {
-    return __data.end();
+    return data.end();
 }
 
 Index::const_iterator Index::end() const noexcept
 {
-    return __data.end();
+    return data.end();
 }
 
 Index::reverse_iterator Index::rbegin() noexcept
 {
-    return __data.rbegin();
+    return data.rbegin();
 }
 
 Index::const_reverse_iterator Index::rbegin() const noexcept
 {
-    return __data.rbegin();
+    return data.rbegin();
 }
 
 Index::reverse_iterator Index::rend() noexcept
 {
-    return __data.rend();
+    return data.rend();
 }
 
 Index::const_reverse_iterator Index::rend() const noexcept
 {
-    return __data.rend();
+    return data.rend();
 }
 
 std::ostream &operator<<(std::ostream &os, const Index &index)
@@ -157,19 +157,18 @@ std::ostream &operator<<(std::ostream &os, const Index &index)
     {
         os << index[i] << ", ";
     }
-    os << index.__data.back() << "}";
+    os << index.data.back() << "}";
 
     return os;
 }
 
 Index &Index::increment(long long index) // #Todo operator++
 {
-    assert(__shape);
-
+    assert(shape);
     size_type skip = (index < 0 ? this->size() + static_cast<size_type>(index) : static_cast<size_type>(index)) + 1;
 
-    auto&& shape_it = __shape->rbegin();
-    for (auto&& index_it = __data.rbegin(); index_it != __data.rend(); ++index_it, ++shape_it)
+    auto &&shape_it = shape->rbegin();
+    for (auto &&index_it = data.rbegin(); index_it != data.rend(); ++index_it, ++shape_it)
     {
         if (skip > 0)
         {
@@ -180,7 +179,7 @@ Index &Index::increment(long long index) // #Todo operator++
 
         if (*index_it >= *shape_it)
         {
-            if (shape_it + 1 == __shape->rend())
+            if (shape_it + 1 == shape->rend())
                 break;
             (*index_it) = 0;
         }

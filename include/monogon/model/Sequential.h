@@ -1,56 +1,62 @@
 //
-// Created by noname on 21.10.22.
+// Created by Mateusz Paszkowski on 21.10.22.
 //
 
-#ifndef MATH_SEQUENTIAL_H
-#define MATH_SEQUENTIAL_H
+#ifndef MONOGON_SEQUENTIAL_H
+#define MONOGON_SEQUENTIAL_H
 
+#include "../layer/Input.h"
+#include "../layer/Layer.h"
 #include "Model.h"
-#include "math/layer/Input.h"
-#include "math/layer/Layer.h"
 #include <memory>
 #include <vector>
-template <typename T> class Sequential : public Model<T>
+template <typename T>
+class Sequential : public Model<T>
 {
-  public:
+public:
     void compile(Loss<T> loss, Optimizer<T> optimizer) override;
 
-    void fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10) override;
+    void fit(const Array<T> &x, const Array<T> &y, std::size_t epochs = 10, std::size_t batch_size = 32) override;
 
-    void predict(Matrix<T> training_data) override;
+    void predict(Array<T> training_data) override;
 
     void add(Input<T> layer);
     void add(LayerNode<T> layer);
 
-  public:
+public:
     //    Loss<T> loss;
     //    Optimizer<T> optimizer;
 
     std::vector<std::shared_ptr<LayerNode<T>>> layers;
 };
 
-template <typename T> void Sequential<T>::compile(Loss<T> loss, Optimizer<T> optimizer)
+template <typename T>
+void Sequential<T>::compile(Loss<T> loss, Optimizer<T> optimizer)
 {
     this->loss = loss;
     this->optimizer = optimizer;
 }
 
-template <typename T> void Sequential<T>::fit(const Matrix<T>& x, const Matrix<T>& y, std::size_t epochs = 10)
+template <typename T>
+void Sequential<T>::fit(const Array<T> &x, const Array<T> &y, std::size_t epochs, std::size_t batch_size)
 {
 }
 
 
-template <typename T> void Sequential<T>::predict(Matrix<T> training_data)
+template <typename T>
+void Sequential<T>::predict(Array<T> training_data)
 {
 }
 
-template <typename T> void Sequential<T>::add(Input<T> input)
+template <typename T>
+void Sequential<T>::add(Input<T> input)
 {
     assert(this->layers.size() == 0);
     this->layers.template emplace_back(input);
 }
 
-template <typename T> void Sequential<T>::add(LayerNode<T> layer)
+template <typename T>
+void Sequential<T>::add(LayerNode<T> layer)
 {
     assert(this->layers.size() > 0);
     std::shared_ptr<LayerNode<T>> next_layer = std::make_shared<LayerNode<T>>(layer);
@@ -59,4 +65,4 @@ template <typename T> void Sequential<T>::add(LayerNode<T> layer)
     this->layers.push_back(next_layer);
 }
 
-#endif //MATH_SEQUENTIAL_H
+#endif //MONOGON_SEQUENTIAL_H

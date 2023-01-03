@@ -1,9 +1,9 @@
 //
-// Created by noname on 09.12.22.
+// Created by Mateusz Paszkowski on 09.12.22.
 //
 
-#ifndef MONOGON_MODELRENDERER_H
-#define MONOGON_MODELRENDERER_H
+#ifndef MONOGON_MODEL_RENDERER_H
+#define MONOGON_MODEL_RENDERER_H
 
 #include <indicators/cursor_control.hpp>
 #include <indicators/progress_bar.hpp>
@@ -51,4 +51,4 @@ private:
     ProgressBar bar;
 };
 
-#endif //MONOGON_MODELRENDERER_H
+#endif //MONOGON_MODEL_RENDERER_H

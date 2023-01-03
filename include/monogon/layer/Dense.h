@@ -1,9 +1,9 @@
 //
-// Created by noname on 21.10.22.
+// Created by Mateusz Paszkowski on 21.10.22.
 //
 
-#ifndef MATH_DENSE_H
-#define MATH_DENSE_H
+#ifndef MONOGON_DENSE_H
+#define MONOGON_DENSE_H
 
 #include "../Array.h"
 #include "../initializer/Initializer.h"
@@ -14,22 +14,28 @@
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class DenseNode : public LayerNode<T>
+template <typename T = double>
+class DenseNode : public LayerNode<T>
 {
-  public:
-    DenseNode(std::vector<size_t> shape,
-              std::shared_ptr<LayerNode<T>> layer,
-              std::shared_ptr<Initializer<T>> initializer);
-    DenseNode(const DenseNode<T> &layer);
+public:
+    DenseNode(std::vector<size_t> s,
+              std::shared_ptr<LayerNode<T>> l,
+              std::shared_ptr<Initializer<T>> init);
+    DenseNode(const DenseNode<T> &layer) = default;
+    DenseNode(DenseNode<T> &&layer) noexcept = default;
+    ~DenseNode() = default;
 
-  public:
+    DenseNode &operator=(const DenseNode &) = default;
+    DenseNode &operator=(DenseNode &&) noexcept = default;
+
+public:
     void add_next_layer(std::shared_ptr<LayerNode<T>> layer) override;
     std::vector<size_t> get_shape() const override;
     Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
-  private:
+private:
     std::vector<std::shared_ptr<LayerNode<T>>> next_layers;
     std::vector<size_t> shape;
     std::shared_ptr<Initializer<T>> initializer;
@@ -40,34 +46,31 @@ template <typename T = double> class DenseNode : public LayerNode<T>
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
 template <typename T>
-DenseNode<T>::DenseNode(std::vector<size_t> shape,
-                        std::shared_ptr<LayerNode<T>> layer,
-                        std::shared_ptr<Initializer<T>> initializer)
-    : shape(shape), initializer(initializer), weights(initializer->operator()(layer->get_shape()[0], shape[0])),
+DenseNode<T>::DenseNode(std::vector<size_t> s,
+                        std::shared_ptr<LayerNode<T>> l,
+                        std::shared_ptr<Initializer<T>> init)
+    : shape(s), initializer(init), weights(init->operator()(l->get_shape()[0], s[0])),
       bias(Array<T>(1, this->shape[0], 0.0))
 {
-    assert(this->shape.size() == 1 && layer->get_shape().size() == 1);
-}
-
-template <typename T>
-DenseNode<T>::DenseNode(const DenseNode<T> &layer)
-    : next_layers(layer.next_layers), shape(layer.shape), weights(layer.weights), bias(layer.bias)
-{
+    assert(this->shape.size() == 1 && l->get_shape().size() == 1);
 }
 
 //---------------------------------------------------- Interface -------------------------------------------------------
 
-template <typename T> void DenseNode<T>::add_next_layer(std::shared_ptr<LayerNode<T>> layer)
+template <typename T>
+void DenseNode<T>::add_next_layer(std::shared_ptr<LayerNode<T>> layer)
 {
     next_layers.push_back(layer);
 }
 
-template <typename T> std::vector<size_t> DenseNode<T>::get_shape() const
+template <typename T>
+std::vector<size_t> DenseNode<T>::get_shape() const
 {
     return this->shape;
 }
 
-template <typename T> Variable<Array<T>> DenseNode<T>::feed_forward(const Variable<Array<T>> &X)
+template <typename T>
+Variable<Array<T>> DenseNode<T>::feed_forward(const Variable<Array<T>> &X)
 {
     for (auto &&next_layer : next_layers)
     {
@@ -76,13 +79,15 @@ template <typename T> Variable<Array<T>> DenseNode<T>::feed_forward(const Variab
     return X.dot(this->weights) + this->bias;
 }
 
-template <typename T> void DenseNode<T>::update_weights(const Optimizer<T> &optimizer)
+template <typename T>
+void DenseNode<T>::update_weights(const Optimizer<T> &optimizer)
 {
     optimizer.minimize(weights);
     optimizer.minimize(bias);
 }
 
-template <typename T> void DenseNode<T>::update_weights_chain(const Optimizer<T> &optimizer)
+template <typename T>
+void DenseNode<T>::update_weights_chain(const Optimizer<T> &optimizer)
 {
     update_weights(optimizer);
     for (auto &&next_layer : next_layers)
@@ -91,19 +96,25 @@ template <typename T> void DenseNode<T>::update_weights_chain(const Optimizer<T>
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class Dense : public Layer<T>
+template <typename T = double>
+class Dense : public Layer<T>
 {
-  public:
+public:
     Dense(std::vector<size_t> shape, Layer<T> &layer);
-    Dense(const Dense &dense);
+    Dense(const Dense &dense) = default;
+    Dense(Dense &&dense) noexcept = default;
+    ~Dense() = default;
 
-  public:
+    Dense &operator=(const Dense &) = default;
+    Dense &operator=(Dense &&) noexcept = default;
+
+public:
     Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     std::shared_ptr<LayerNode<T>> get_node() const override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
-  private:
+private:
     std::shared_ptr<DenseNode<T>> node;
 };
 
@@ -116,29 +127,29 @@ Dense<T>::Dense(std::vector<size_t> shape, Layer<T> &layer)
     layer.get_node()->add_next_layer(this->node);
 }
 
-template <typename T> Dense<T>::Dense(const Dense<T> &dense) : node(dense.node)
-{
-}
-
 //---------------------------------------------------- Interface -------------------------------------------------------
 
-template <typename T> Variable<Array<T>> Dense<T>::feed_forward(const Variable<Array<T>> &X)
+template <typename T>
+Variable<Array<T>> Dense<T>::feed_forward(const Variable<Array<T>> &X)
 {
     return node->feed_forward(X);
 }
 
-template <typename T> std::shared_ptr<LayerNode<T>> Dense<T>::get_node() const
+template <typename T>
+std::shared_ptr<LayerNode<T>> Dense<T>::get_node() const
 {
     return this->node;
 }
 
-template <typename T> void Dense<T>::update_weights(const Optimizer<T> &optimizer)
+template <typename T>
+void Dense<T>::update_weights(const Optimizer<T> &optimizer)
 {
     this->node->update_weights(optimizer);
 }
-template <typename T> void Dense<T>::update_weights_chain(const Optimizer<T> &optimizer)
+template <typename T>
+void Dense<T>::update_weights_chain(const Optimizer<T> &optimizer)
 {
     this->node->update_weights_chain(optimizer);
 }
 
-#endif //MATH_DENSE_H
+#endif //MONOGON_DENSE_H

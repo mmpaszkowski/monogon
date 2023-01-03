@@ -11,12 +11,14 @@ set(LIBRARY_HEADERS
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Array.h
-    ../include/monogon/Tensor.h
     ../include/monogon/Operation.h
     ../include/monogon/Variable.h
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
-    ../include/monogon/view/ModelRenderer.h ../include/monogon/metric/Metric.h ../include/monogon/metric/CategoricalAccuracy.h ../include/monogon/utils/low_level.h low_level.cpp)
+    ../include/monogon/view/ModelRenderer.h
+    ../include/monogon/metric/Metric.h
+    ../include/monogon/metric/CategoricalAccuracy.h
+    ../include/monogon/utils/low_level.h low_level.cpp)
 
 set(LIBRARY_INCLUDES
     ../include

@@ -2,25 +2,24 @@
 // Created by Mateusz Paszkowski on 12.11.22.
 //
 
-#include <monogon/tool/Shape.h>
 #include <monogon/tool/Index.h>
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
-Shape::Shape() : __data()
+Shape::Shape() : data()
 {
 }
 
-Shape::Shape(const std::vector<value_type> &data) : __data(data)
+Shape::Shape(const std::vector<value_type> &d) : data(d)
 {
 }
 
-Shape::Shape(std::vector<value_type> &&data) noexcept : __data(std::move(data))
+Shape::Shape(std::vector<value_type> &&d) noexcept : data(std::move(d))
 {
 }
 
 Shape::Shape(const Shape &shape) = default;
 
-Shape::Shape(Shape &&shape) noexcept : __data(std::move(shape.__data))
+Shape::Shape(Shape &&shape) noexcept : data(std::move(shape.data))
 {
 }
 
@@ -33,93 +32,93 @@ Shape &Shape::operator=(const Shape &rhs) = default;
 
 Shape &Shape::operator=(Shape &&rhs) noexcept
 {
-    this->__data = std::move(rhs.__data);
+    this->data = std::move(rhs.data);
     return *this;
 }
 
 Shape::value_type &Shape::operator[](value_type i)
 {
-    return __data[i];
+    return data[i];
 }
 
 Shape::const_reference Shape::operator[](value_type i) const
 {
-    return __data[i];
+    return data[i];
 }
 
 Shape::value_type &Shape::operator()(long long i)
 {
     if (i < 0)
-        return __data[__data.size() + static_cast<size_type>(i)];
+        return data[data.size() + static_cast<size_type>(i)];
     else
-        return __data[static_cast<size_type>(i)];
+        return data[static_cast<size_type>(i)];
 }
 
 Shape::const_reference Shape::operator()(long long i) const
 {
     if (i < 0)
-        return __data[__data.size() + static_cast<size_type>(i)];
+        return data[data.size() + static_cast<size_type>(i)];
     else
-        return __data[static_cast<size_type>(i)];
+        return data[static_cast<size_type>(i)];
 }
 
 bool Shape::operator==(const Shape &rhs) const
 {
-    return this->__data == rhs.__data;
+    return this->data == rhs.data;
 }
 
 //----------------------------------------------------- Methods --------------------------------------------------------
 
 Shape::value_type Shape::size() const
 {
-    return __data.size();
+    return data.size();
 }
 
 Index Shape::last_index() const
 {
-// #Todo Index
+    // #Todo Index
     return Index({1, 2, 3});
 }
 
 
 Shape::iterator Shape::begin() noexcept
 {
-    return __data.begin();
+    return data.begin();
 }
 
 Shape::const_iterator Shape::begin() const noexcept
 {
-    return __data.begin();
+    return data.begin();
 }
 
 Shape::iterator Shape::end() noexcept
 {
-    return __data.end();
+    return data.end();
 }
 
 Shape::const_iterator Shape::end() const noexcept
 {
-    return __data.end();
+    return data.end();
 }
 
 Shape::reverse_iterator Shape::rbegin() noexcept
 {
-    return __data.rbegin();
+    return data.rbegin();
 }
 
 Shape::const_reverse_iterator Shape::rbegin() const noexcept
 {
-    return __data.rbegin();
+    return data.rbegin();
 }
 
 Shape::reverse_iterator Shape::rend() noexcept
 {
-    return __data.rend();
+    return data.rend();
 }
 
 Shape::const_reverse_iterator Shape::rend() const noexcept
 {
-    return __data.rend();
+    return data.rend();
 }
 
 std::ostream &operator<<(std::ostream &os, const Shape &shape)
@@ -129,7 +128,7 @@ std::ostream &operator<<(std::ostream &os, const Shape &shape)
     {
         os << shape[i] << ", ";
     }
-    os << shape.__data.back() << "}";
+    os << shape.data.back() << "}";
 
     return os;
 }

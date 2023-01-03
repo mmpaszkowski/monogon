@@ -1,5 +1,5 @@
 //
-// Created by noname on 21.12.22.
+// Created by Mateusz Paszkowski on 21.12.22.
 //
 
 #ifndef MONOGON_LOW_LEVEL_H

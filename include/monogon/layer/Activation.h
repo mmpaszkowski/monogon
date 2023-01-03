@@ -1,9 +1,9 @@
 //
-// Created by noname on 21.10.22.
+// Created by Mateusz Paszkowski on 21.10.22.
 //
 
-#ifndef MATH_ACTIVATION_H
-#define MATH_ACTIVATION_H
+#ifndef MONOGON_ACTIVATION_H
+#define MONOGON_ACTIVATION_H
 
 #include "../Array.h"
 #include "../activation/ActivationFunction.h"
@@ -13,21 +13,27 @@
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T> class ActivationNode : public LayerNode<T>
+template <typename T>
+class ActivationNode : public LayerNode<T>
 {
-  public:
-    ActivationNode(std::vector<size_t> shape, std::shared_ptr<LayerNode<T>> layer);
+public:
     ActivationNode(std::shared_ptr<ActivationFunction<T>> activation_function, std::shared_ptr<LayerNode<T>> layer);
-    ActivationNode(const ActivationNode<T> &layer);
+    ActivationNode(const ActivationNode<T> &activationNode) = default;
+    ActivationNode(ActivationNode<T> &&activationNode) noexcept = default;
 
-  public:
+    ActivationNode &operator=(const ActivationNode<T> &activationNode) = default;
+    ActivationNode &operator=(ActivationNode<T> &&activationNode) noexcept = default;
+
+    ~ActivationNode() = default;
+
+public:
     void add_next_layer(std::shared_ptr<LayerNode<T>> layer) override;
     std::vector<size_t> get_shape() const override;
     Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
-  private:
+private:
     std::vector<std::shared_ptr<LayerNode<T>>> next_layers;
     std::vector<size_t> shape;
     std::shared_ptr<ActivationFunction<T>> activation_function;
@@ -35,12 +41,6 @@ template <typename T> class ActivationNode : public LayerNode<T>
 
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
-template <typename T>
-ActivationNode<T>::ActivationNode(std::vector<size_t> shape, std::shared_ptr<LayerNode<T>> layer)
-    : shape(layer->get_shape())
-{
-    assert(this->shape.size() == 1 && layer->get_shape().size() == 1);
-}
 
 template <typename T>
 ActivationNode<T>::ActivationNode(std::shared_ptr<ActivationFunction<T>> activation_function,
@@ -50,24 +50,22 @@ ActivationNode<T>::ActivationNode(std::shared_ptr<ActivationFunction<T>> activat
     assert(this->shape.size() == 1 && layer->get_shape().size() == 1);
 }
 
-template <typename T>
-ActivationNode<T>::ActivationNode(const ActivationNode<T> &layer) : next_layers(layer.next_layers), shape(layer.shape)
-{
-}
-
 //---------------------------------------------------- Interface -------------------------------------------------------
 
-template <typename T> void ActivationNode<T>::add_next_layer(std::shared_ptr<LayerNode<T>> layer)
+template <typename T>
+void ActivationNode<T>::add_next_layer(std::shared_ptr<LayerNode<T>> layer)
 {
     next_layers.push_back(layer);
 }
 
-template <typename T> std::vector<size_t> ActivationNode<T>::get_shape() const
+template <typename T>
+std::vector<size_t> ActivationNode<T>::get_shape() const
 {
     return this->shape;
 }
 
-template <typename T> Variable<Array<T>> ActivationNode<T>::feed_forward(const Variable<Array<T>> &X)
+template <typename T>
+Variable<Array<T>> ActivationNode<T>::feed_forward(const Variable<Array<T>> &X)
 {
     for (auto &&next_layer : next_layers)
     {
@@ -76,11 +74,13 @@ template <typename T> Variable<Array<T>> ActivationNode<T>::feed_forward(const V
     return this->activation_function->operator()(X);
 }
 
-template <typename T> void ActivationNode<T>::update_weights(const Optimizer<T> &optimizer)
+template <typename T>
+void ActivationNode<T>::update_weights([[maybe_unused]] const Optimizer<T> &optimizer)
 {
 }
 
-template <typename T> void ActivationNode<T>::update_weights_chain(const Optimizer<T> &optimizer)
+template <typename T>
+void ActivationNode<T>::update_weights_chain(const Optimizer<T> &optimizer)
 {
     for (auto &&next_layer : next_layers)
         next_layer->update_weights_chain(optimizer);
@@ -88,21 +88,28 @@ template <typename T> void ActivationNode<T>::update_weights_chain(const Optimiz
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class Activation : public Layer<T>
+template <typename T = double>
+class Activation : public Layer<T>
 {
-  public:
-    template <template <typename> typename A> Activation(const A<T> &activation_function, Layer<T> &layer);
+public:
+    template <template <typename> typename A>
+    Activation(const A<T> &activation_function, Layer<T> &layer);
 
-    Activation(std::vector<size_t> shape, Layer<T> &layer);
-    Activation(const Activation &dense);
+    Activation(const Activation<T> &activation) = default;
+    Activation(Activation<T> &&activation) noexcept = default;
 
-  public:
+    Activation &operator=(const Activation<T> &activation) = default;
+    Activation &operator=(Activation<T> &&activation) noexcept = default;
+
+    ~Activation() = default;
+
+public:
     Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
     std::shared_ptr<LayerNode<T>> get_node() const override;
     void update_weights(const Optimizer<T> &optimizer) override;
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
-  private:
+private:
     std::shared_ptr<ActivationNode<T>> node;
 };
 
@@ -116,37 +123,30 @@ Activation<T>::Activation(const A<T> &activation_function, Layer<T> &layer)
     layer.get_node()->add_next_layer(this->node);
 }
 
-template <typename T>
-Activation<T>::Activation(std::vector<size_t> shape, Layer<T> &layer)
-    : node(std::make_shared<ActivationNode<T>>(std::make_shared<ReLu<T>>(), layer.get_node()))
-{
-    layer.get_node()->add_next_layer(this->node);
-}
-
-template <typename T> Activation<T>::Activation(const Activation<T> &activation) : node(activation.node)
-{
-}
-
 //---------------------------------------------------- Interface -------------------------------------------------------
 
-template <typename T> Variable<Array<T>> Activation<T>::feed_forward(const Variable<Array<T>> &X)
+template <typename T>
+Variable<Array<T>> Activation<T>::feed_forward(const Variable<Array<T>> &X)
 {
     return node->feed_forward(X);
 }
 
-template <typename T> std::shared_ptr<LayerNode<T>> Activation<T>::get_node() const
+template <typename T>
+std::shared_ptr<LayerNode<T>> Activation<T>::get_node() const
 {
     return this->node;
 }
 
-template <typename T> void Activation<T>::update_weights(const Optimizer<T> &optimizer)
+template <typename T>
+void Activation<T>::update_weights(const Optimizer<T> &optimizer)
 {
     this->node->update_weights(optimizer);
 }
 
-template <typename T> void Activation<T>::update_weights_chain(const Optimizer<T> &optimizer)
+template <typename T>
+void Activation<T>::update_weights_chain(const Optimizer<T> &optimizer)
 {
     this->node->update_weights_chain(optimizer);
 }
 
-#endif //MATH_ACTIVATION_H
+#endif //MONOGON_ACTIVATION_H

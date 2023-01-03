@@ -1,20 +1,22 @@
 //
-// Created by noname on 03.11.22.
+// Created by Mateusz Paszkowski on 03.11.22.
 //
 
-#ifndef MATH_INITIALIZER_H
-#define MATH_INITIALIZER_H
+#ifndef MONOGON_INITIALIZER_H
+#define MONOGON_INITIALIZER_H
 
 #include <random>
-template <typename T = double> class Initializer
+template <typename T = double>
+class Initializer
 {
-  public:
+public:
     virtual Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const = 0;
 };
 
 //------------------------------------------------- Class Definition ---------------------------------------------------
 
-template <typename T = double> class GlorotUniform : public Initializer<T>
+template <typename T = double>
+class GlorotUniform : public Initializer<T>
 {
 public:
     Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
@@ -37,7 +39,8 @@ Variable<Array<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t co
     return Variable(result);
 }
 
-template <typename T = double> class Ones : public Initializer<T>
+template <typename T = double>
+class Ones : public Initializer<T>
 {
 public:
     Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
@@ -50,4 +53,4 @@ Variable<Array<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
     return Variable(result);
 }
 
-#endif //MATH_INITIALIZER_H
+#endif //MONOGON_INITIALIZER_H

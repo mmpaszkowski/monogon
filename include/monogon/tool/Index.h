@@ -23,11 +23,11 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 public:
-    Index(const std::vector<value_type> &data);
-    Index(std::vector<value_type> &&data) noexcept;
-    Index(Shape shape);
-    Index(const Index &index);
-    Index(Index &&index) noexcept;
+    Index(const std::vector<value_type> &d);
+    Index(std::vector<value_type> &&d) noexcept;
+    Index(Shape s);
+    Index(const Index &i);
+    Index(Index &&i) noexcept;
     ~Index();
 
     Index &operator=(const Index &rhs);
@@ -63,8 +63,8 @@ public:
     const_reverse_iterator rend() const noexcept;
 
 private:
-    std::vector<value_type> __data;
-    std::optional<Shape> __shape;
+    std::vector<value_type> data;
+    std::optional<Shape> shape;
 
 public:
     friend std::ostream &operator<<(std::ostream &os, const Index &variable);

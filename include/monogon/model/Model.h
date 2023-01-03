@@ -1,33 +1,34 @@
 //
-// Created by noname on 21.10.22.
+// Created by Mateusz Paszkowski on 21.10.22.
 //
 
-#ifndef MATH_MODEL_H
-#define MATH_MODEL_H
+#ifndef MONOGON_MODEL_H
+#define MONOGON_MODEL_H
 
-#include "../loss/Loss.h"
-#include "../optimizer/Optimizer.h"
-#include "../layer/Layer.h"
 #include "../activation/ActivationFunction.h"
+#include "../layer/Layer.h"
+#include "../loss/Loss.h"
+#include "../metric/CategoricalAccuracy.h"
+#include "../optimizer/Optimizer.h"
 #include "../tool/Slice.h"
 #include "../view/ModelRenderer.h"
-#include "../metric/CategoricalAccuracy.h"
 #include <indicators/progress_bar.hpp>
 #include <iostream>
 using namespace indicators;
 
-template <typename T = double> class Model
+template <typename T = double>
+class Model
 {
-  public:
+public:
     template <template <typename> typename Layer1, template <typename> typename Layer2>
     Model(const Layer1<T> &begin, const Layer2<T> &end);
 
     template <template <typename> typename O, template <typename> typename L>
-    void compile(const O<T> &optimizer, const L<T> &loss);
-    virtual void fit(const Array<T>& x, const Array<T>& y, std::size_t epochs = 10, std::size_t batch_size=32);
+    void compile(const O<T> &opt, const L<T> &l);
+    virtual void fit(const Array<T> &x, const Array<T> &y, std::size_t epochs = 10, std::size_t batch_size = 32);
     virtual Array<T> predict(Array<T> x);
 
-  private:
+private:
     std::shared_ptr<Layer<T>> begin;
     std::shared_ptr<Layer<T>> end;
 
@@ -45,13 +46,14 @@ Model<T>::Model(const L1<T> &begin, const L2<T> &end)
 
 template <typename T>
 template <template <typename> typename O, template <typename> typename L>
-void Model<T>::compile(const O<T> &optimizer, const L<T> &loss)
+void Model<T>::compile(const O<T> &opt, const L<T> &l)
 {
-    this->optimizer = std::make_shared<O<T>>(optimizer);
-    this->loss = std::make_shared<L<T>>(loss);
+    this->optimizer = std::make_shared<O<T>>(opt);
+    this->loss = std::make_shared<L<T>>(l);
 }
 
-template <typename T> void Model<T>::fit(const Array<T>& x, const Array<T>& y, size_t epochs, std::size_t batch_size)
+template <typename T>
+void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::size_t batch_size)
 {
     Slice slicer;
 
@@ -62,30 +64,33 @@ template <typename T> void Model<T>::fit(const Array<T>& x, const Array<T>& y, s
         size_t total_batches = 0;
         ModelRenderer modelRenderer;
         CategoricalAccuracy<T> categoricalAccuracy;
-        modelRenderer.render_epoch(i+1, epochs);
-        for(size_t j = 0; j < x.get_rows(); j+=batch_size)
+        modelRenderer.render_epoch(i + 1, epochs);
+        for (size_t j = 0; j < x.get_rows(); j += batch_size)
         {
-            Array sub_x = slicer(x, j, j+batch_size);
-            Array sub_y = slicer(y, j, j+batch_size);
-            Variable y_pred = begin->feed_forward(sub_x);
-            Variable loss = (*this->loss)(y_pred, sub_y);
-            loss.back_propagation();
-            total_loss += loss.get_value();
+            Array sub_x = slicer(x, j, j + batch_size);
+            Array sub_y = slicer(y, j, j + batch_size);
+            Variable y_pred = begin->feed_forward(Variable(sub_x));
+            Variable loss_val = (*this->loss)(y_pred, Variable(sub_y));
+            loss_val.back_propagation();
+            total_loss += loss_val.get_value();
             total_accuracy += categoricalAccuracy(y_pred.get_value(), sub_y);
             total_batches++;
             begin->update_weights_chain(*optimizer);
-            loss.zero_grad();
+            loss_val.zero_grad();
             auto finish = std::chrono::high_resolution_clock::now();
-            modelRenderer.render_progress_bar(j / batch_size + 1, x.get_rows()/batch_size, total_loss/static_cast<T>(total_batches), total_accuracy/static_cast<T>(total_batches));
+            modelRenderer.render_progress_bar(j / batch_size + 1,
+                                              x.get_rows() / batch_size,
+                                              total_loss / static_cast<T>(total_batches),
+                                              total_accuracy / static_cast<T>(total_batches));
         }
-//        modelRenderer.finish();
+        modelRenderer.finish();
     }
 }
 
 template <typename T>
 Array<T> Model<T>::predict(Array<T> x)
 {
-    return begin->feed_forward(x).get_value();
+    return begin->feed_forward(Variable(x)).get_value();
 }
 
-#endif //MATH_MODEL_H
+#endif //MONOGON_MODEL_H

@@ -28,8 +28,8 @@ public:
 
 public:
     Shape();
-    Shape(const std::vector<value_type> &data);
-    Shape(std::vector<value_type> &&data) noexcept;
+    Shape(const std::vector<value_type> &d);
+    Shape(std::vector<value_type> &&d) noexcept;
     Shape(const Shape &shape);
     Shape(Shape &&shape) noexcept;
     ~Shape();
@@ -57,7 +57,7 @@ public:
     const_reverse_iterator rend() const noexcept;
 
 private:
-    std::vector<value_type> __data;
+    std::vector<value_type> data;
 
 public:
     friend std::ostream &operator<<(std::ostream &os, const Shape &variable);

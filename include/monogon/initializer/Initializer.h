@@ -10,6 +10,14 @@ template <typename T = double>
 class Initializer
 {
 public:
+    Initializer() = default;
+    Initializer(const Initializer<T> &initializer) = default;
+    Initializer(Initializer<T> &&initializer) noexcept = default;
+
+    Initializer &operator=(const Initializer<T> &initializer) = default;
+    Initializer &operator=(Initializer<T> &&initializer) noexcept = default;
+    virtual ~Initializer() = default;
+public:
     virtual Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const = 0;
 };
 
@@ -18,6 +26,14 @@ public:
 template <typename T = double>
 class GlorotUniform : public Initializer<T>
 {
+public:
+    GlorotUniform() = default;
+    GlorotUniform(const GlorotUniform<T> &glorot_uniform) = default;
+    GlorotUniform(GlorotUniform<T> &&glorot_uniform) noexcept = default;
+
+    GlorotUniform &operator=(const GlorotUniform<T> &glorot_uniform) = default;
+    GlorotUniform &operator=(GlorotUniform<T> &&glorot_uniform) noexcept = default;
+    virtual ~GlorotUniform() = default;
 public:
     Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
 };

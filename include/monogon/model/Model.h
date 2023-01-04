@@ -20,8 +20,18 @@ template <typename T = double>
 class Model
 {
 public:
+    Model(T alpha = 0.0, T threshold = 0.0, std::optional<T> max_value = std::optional<T>());
+    Model(const Model<T> &model) = default;
+    Model(Model<T> &&model) noexcept = default;
+
+    Model &operator=(const Model<T> &model) = default;
+    Model &operator=(Model<T> &&model) noexcept = default;
+
     template <template <typename> typename Layer1, template <typename> typename Layer2>
     Model(const Layer1<T> &begin, const Layer2<T> &end);
+
+    virtual ~Model() = default;
+
 
     template <template <typename> typename O, template <typename> typename L>
     void compile(const O<T> &opt, const L<T> &l);
@@ -39,8 +49,8 @@ private:
 
 template <typename T>
 template <template <typename> typename L1, template <typename> typename L2>
-Model<T>::Model(const L1<T> &begin, const L2<T> &end)
-    : begin(std::make_shared<L1<T>>(begin)), end(std::make_shared<L2<T>>(end))
+Model<T>::Model(const L1<T> &b, const L2<T> &e)
+    : begin(std::make_shared<L1<T>>(b)), end(std::make_shared<L2<T>>(e))
 {
 }
 
@@ -77,7 +87,6 @@ void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::siz
             total_batches++;
             begin->update_weights_chain(*optimizer);
             loss_val.zero_grad();
-            auto finish = std::chrono::high_resolution_clock::now();
             modelRenderer.render_progress_bar(j / batch_size + 1,
                                               x.get_rows() / batch_size,
                                               total_loss / static_cast<T>(total_batches),

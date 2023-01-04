@@ -98,7 +98,7 @@ VariableNode<T>::VariableNode(T val) : value(val), grad(), operation(), lhs(), r
 
 template <typename T>
 VariableNode<T>::VariableNode(T val, std::shared_ptr<const AbstractVariableNode> l, std::shared_ptr<Operation> op)
-    : value(val), grad(), lhs(std::move(l)), rhs(), operation(std::move(op))
+    : value(val), grad(), operation(std::move(op)), lhs(std::move(l)), rhs()
 {
 }
 
@@ -107,7 +107,7 @@ VariableNode<T>::VariableNode(T val,
                               std::shared_ptr<const AbstractVariableNode> l,
                               std::shared_ptr<const AbstractVariableNode> r,
                               std::shared_ptr<Operation> op)
-    : value(std::move(val)), lhs(std::move(l)), rhs(std::move(r)), operation(std::move(op))
+    : value(std::move(val)), grad(), operation(std::move(op)), lhs(std::move(l)), rhs(std::move(r))
 {
 }
 

@@ -6,7 +6,7 @@ set(MONOGON_PROJECT_NAME monogon)
 project(${MONOGON_PROJECT_NAME} VERSION 0.0.1 LANGUAGES CXX)
 
 # GLOBAL CMAKE VARIABLES
-set(CMAKE_CXX_STANDARD              17)
+set(CMAKE_CXX_STANDARD              20)
 set(CMAKE_CXX_STANDARD_REQUIRED     ON)
 set(CMAKE_CXX_EXTENSIONS            OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
@@ -45,17 +45,9 @@ FetchContent_MakeAvailable(fmt)
 
 FetchContent_Declare(
         indicators
-        GIT_REPOSITORY https://github.com/p-ranav/indicators.git
-        GIT_TAG v2.2
+        GIT_REPOSITORY https://github.com/mmpaszkowski/indicators
         GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(indicators)
-
-#FetchContent_Declare(
-#        open_blas
-#        GIT_REPOSITORY https://github.com/xianyi/OpenBLAS.git
-#        GIT_TAG v0.3.21
-#        GIT_SHALLOW TRUE)
-#FetchContent_MakeAvailable(open_blas)
 
 # SUBDIRECTORIES
 add_subdirectory(configured)

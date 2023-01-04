@@ -236,7 +236,7 @@ struct AvgOperation<T, Array<U>> : public Operation
 
         Array<U> l_result = Array<U>(lhs_value.get_rows(),
                                      lhs_value.get_columns(),
-                                     1.0 / (lhs_value.get_rows() * lhs_value.get_columns())) *
+                                     1.0 / static_cast<double>(lhs_value.get_rows() * lhs_value.get_columns())) *
                             grad_value;
         return std::tuple(l_result, std::any());
     }

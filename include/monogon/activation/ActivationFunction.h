@@ -12,6 +12,15 @@ template <typename T>
 class ActivationFunction
 {
 public:
+    ActivationFunction() = default;
+    ActivationFunction(const ActivationFunction<T> &activation_function) = default;
+    ActivationFunction(ActivationFunction<T> &&activation_function) noexcept = default;
+
+    ActivationFunction &operator=(const ActivationFunction<T> &activation_function) = default;
+    ActivationFunction &operator=(ActivationFunction<T> &&activation_function) noexcept = default;
+
+    virtual ~ActivationFunction() = default;
+public:
     virtual Variable<Array<T>> operator()(Variable<Array<T>> x) const = 0;
 };
 
@@ -28,7 +37,7 @@ public:
     ReLu &operator=(const ReLu<T> &reLu) = default;
     ReLu &operator=(ReLu<T> &&reLu) noexcept = default;
 
-    ~ReLu() = default;
+    virtual ~ReLu() = default;
 
 public:
     Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
@@ -40,8 +49,8 @@ private:
 };
 
 template <typename T>
-ReLu<T>::ReLu(T alpha, T threshold, std::optional<T> max_value)
-    : alpha(alpha), max_value(max_value), threshold(threshold)
+ReLu<T>::ReLu(T a, T t, std::optional<T> mv)
+    : alpha(a), max_value(mv), threshold(t)
 {
 }
 
@@ -56,6 +65,15 @@ Variable<Array<T>> ReLu<T>::operator()(Variable<Array<T>> x) const
 template <typename T = double>
 class Sigmoid : public ActivationFunction<T>
 {
+public:
+    Sigmoid() = default;
+    Sigmoid(const Sigmoid<T> &sigmoid) = default;
+    Sigmoid(Sigmoid<T> &&sigmoid) noexcept = default;
+
+    Sigmoid &operator=(const Sigmoid<T> &sigmoid) = default;
+    Sigmoid &operator=(Sigmoid<T> &&sigmoid) noexcept = default;
+
+    virtual ~Sigmoid() = default;
 public:
     Variable<Array<T>> operator()(Variable<Array<T>> x) const override;
 

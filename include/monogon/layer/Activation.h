@@ -43,11 +43,11 @@ private:
 
 
 template <typename T>
-ActivationNode<T>::ActivationNode(std::shared_ptr<ActivationFunction<T>> activation_function,
-                                  std::shared_ptr<LayerNode<T>> layer)
-    : shape(layer->get_shape()), activation_function(activation_function)
+ActivationNode<T>::ActivationNode(std::shared_ptr<ActivationFunction<T>> af,
+                                  std::shared_ptr<LayerNode<T>> l)
+    : shape(l->get_shape()), activation_function(af)
 {
-    assert(this->shape.size() == 1 && layer->get_shape().size() == 1);
+    assert(this->shape.size() == 1 && l->get_shape().size() == 1);
 }
 
 //---------------------------------------------------- Interface -------------------------------------------------------

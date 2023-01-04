@@ -61,6 +61,7 @@ if (MONOGON_ENABLE_TESTING)
         append_coverage_compiler_flags()
     endif()
     add_subdirectory(tests)
+    add_subdirectory(benchmark)
 endif()
 
 # INSTALL TARGETS

@@ -6,6 +6,8 @@
 #define MONOGON_LAYER_H
 
 #include <vector>
+#include "../Array.h"
+#include "../Variable.h"
 
 template <typename T>
 class Optimizer;
@@ -15,11 +17,11 @@ class LayerNode
 {
 public:
     LayerNode() = default;
-    LayerNode(const LayerNode<T> &layer_node) = default;
-    LayerNode(LayerNode<T> &&layer_node) noexcept = default;
+    LayerNode(const LayerNode<T> &layer_node) = delete;
+    LayerNode(LayerNode<T> &&layer_node) noexcept = delete;
 
-    LayerNode &operator=(const LayerNode<T> &layer_node) = default;
-    LayerNode &operator=(LayerNode<T> &&layer_node) noexcept = default;
+    LayerNode &operator=(const LayerNode<T> &layer_node) = delete;
+    LayerNode &operator=(LayerNode<T> &&layer_node) noexcept = delete;
     virtual ~LayerNode() = default;
 public:
     virtual void add_next_layer(std::shared_ptr<LayerNode<T>> layer) = 0;

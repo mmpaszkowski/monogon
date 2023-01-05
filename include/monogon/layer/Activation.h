@@ -18,11 +18,11 @@ class ActivationNode : public LayerNode<T>
 {
 public:
     ActivationNode(std::shared_ptr<ActivationFunction<T>> activation_function, std::shared_ptr<LayerNode<T>> layer);
-    ActivationNode(const ActivationNode<T> &activationNode) = default;
-    ActivationNode(ActivationNode<T> &&activationNode) noexcept = default;
+    ActivationNode(const ActivationNode<T> &activationNode) = delete;
+    ActivationNode(ActivationNode<T> &&activationNode) noexcept = delete;
 
-    ActivationNode &operator=(const ActivationNode<T> &activationNode) = default;
-    ActivationNode &operator=(ActivationNode<T> &&activationNode) noexcept = default;
+    ActivationNode &operator=(const ActivationNode<T> &activationNode) = delete;
+    ActivationNode &operator=(ActivationNode<T> &&activationNode) noexcept = delete;
 
     ~ActivationNode() = default;
 

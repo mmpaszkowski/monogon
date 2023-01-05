@@ -5,26 +5,25 @@
 #ifndef MONOGON_ARRAY_H
 #define MONOGON_ARRAY_H
 
+#include "utils/low_level.h"
 #include <cassert>
+#include <omp.h>
 #include <ostream>
 #include <valarray>
-#include <omp.h>
-#include "utils/low_level.h"
-
-template <typename T> class Vector;
 
 //---------------------------------------------------- Class body ------------------------------------------------------
 
-template <typename T> class Array
+template <typename T = double>
+class Array
 {
-  public:
+public:
     using value_type = T;
     using size_type = std::size_t;
     Array();
     Array(size_t row, size_t column);
     Array(size_t row, size_t column, const T &value);
 
-    ~Array() = default;
+    ~Array();
 
     template <template <typename...> typename Container, template <typename...> typename NestedContainer>
     explicit Array(const Container<NestedContainer<value_type>> &container);
@@ -41,43 +40,53 @@ template <typename T> class Array
     Array<T> &operator=(const Array<T> &);
     Array<T> &operator=(Array<T> &&) noexcept;
 
-  public:
+public:
     value_type &operator()(std::size_t row, std::size_t column);
     const value_type &operator()(std::size_t row, std::size_t column) const;
 
     auto operator-() const;
-    template <typename U> auto operator+(const Array<U> &rhs) const;
-    template <typename U> auto operator-(const Array<U> &rhs) const;
-    template <typename U> auto operator*(const Array<U> &rhs) const;
-    template <typename U> auto operator/(const Array<U> &rhs) const;
+    template <typename U>
+    auto operator+(const Array<U> &rhs) const;
+    template <typename U>
+    auto operator-(const Array<U> &rhs) const;
+    template <typename U>
+    auto operator*(const Array<U> &rhs) const;
+    template <typename U>
+    auto operator/(const Array<U> &rhs) const;
 
-    template <typename U> auto operator+(const U &val) const;
-    template <typename U> auto operator-(const U &val) const;
-    template <typename U> auto operator*(const U &val) const;
-    template <typename U> auto operator/(const U &val) const;
+    template <typename U>
+    auto operator+(const U &val) const;
+    template <typename U>
+    auto operator-(const U &val) const;
+    template <typename U>
+    auto operator*(const U &val) const;
+    template <typename U>
+    auto operator/(const U &val) const;
 
-    template <typename U> bool operator==(const Array<U> &rhs) const;
+    template <typename U>
+    bool operator==(const Array<U> &rhs) const;
 
     Array<T> transpose() const;
-    template <typename U> auto dot(const Array<U> &rhs) const;
-    template <typename U> auto dot(const Vector<U> &rhs) const;
+    template <typename U>
+    auto dot(const Array<U> &rhs) const;
 
     auto exp() const;
     auto max(T value) const;
     auto avg() const;
 
-  public:
+public:
     const std::valarray<value_type> &get_data() const;
     size_type get_rows() const;
     size_type get_columns() const;
 
-  private:
+private:
     std::valarray<value_type> data;
     size_t row_size;
     size_t column_size;
 
-  public:
-    template <typename U> friend std::ostream &operator<<(std::ostream &os, const Array<U> &variable);
+public:
+    template <typename U>
+    friend std::ostream &operator<<(std::ostream &os, const Array<U> &variable);
 };
 
 //--------------------------------------------------- Constructors -----------------------------------------------------
@@ -99,12 +108,13 @@ Array<T>::Array(size_t row, size_t column, const T &value) : data(row * column),
         item = value;
 }
 
+template <typename T>
+Array<T>::~Array() = default;
 
 template <typename T>
-Array<T>::Array(std::initializer_list<T> list)
-    : row_size(list.size()), column_size(1)
+Array<T>::Array(std::initializer_list<T> list) : row_size(list.size()), column_size(1)
 {
-//#todo make one dimesion
+    //#todo make one dimesion
     this->data.resize(this->row_size * this->column_size);
     size_t i = 0;
     for (const auto &item : list)
@@ -124,8 +134,7 @@ Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
 
 template <typename T>
 template <template <typename...> typename Container>
-Array<T>::Array(const Container<T> &container)
-    : row_size(container.size()), column_size(1)
+Array<T>::Array(const Container<T> &container) : row_size(container.size()), column_size(1)
 
 {
     this->data.resize(this->row_size * this->column_size);
@@ -178,17 +187,20 @@ Array<T> &Array<T>::operator=(Array<T> &&rhs) noexcept
 
 //----------------------------------------------------- Operators ------------------------------------------------------
 
-template <typename T> T &Array<T>::operator()(std::size_t row, std::size_t column)
+template <typename T>
+T &Array<T>::operator()(std::size_t row, std::size_t column)
 {
     return data[row * column_size + column];
 }
 
-template <typename T> const T &Array<T>::operator()(std::size_t row, std::size_t column) const
+template <typename T>
+const T &Array<T>::operator()(std::size_t row, std::size_t column) const
 {
     return data[row * column_size + column];
 }
 
-template <typename T> auto Array<T>::operator-() const
+template <typename T>
+auto Array<T>::operator-() const
 {
     Array<T> result(this->row_size, this->column_size);
     result.data = -this->data;
@@ -196,25 +208,29 @@ template <typename T> auto Array<T>::operator-() const
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator+(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator+(const Array<U> &rhs) const
 {
     using result_val_type = decltype(std::declval<T>() + std::declval<U>());
     Array<result_val_type> result(std::max(this->row_size, rhs.row_size),
-                                   std::max(this->column_size, rhs.get_columns()));
+                                  std::max(this->column_size, rhs.get_columns()));
 
-//    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
+    //    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
     for (size_t i = 0; i < result.get_rows(); i++)
     {
         for (size_t j = 0; j < result.get_columns(); j++)
         {
-            result(i, j) = this->operator()(i % this->get_rows(), j % this->get_columns())
-                           + rhs(i % rhs.get_rows(), j % rhs.get_columns());
+            result(i, j) = this->operator()(i % this->get_rows(), j % this->get_columns()) +
+                           rhs(i % rhs.get_rows(), j % rhs.get_columns());
         }
     }
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator-(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator-(const Array<U> &rhs) const
 {
     assert(this->row_size == rhs.row_size && this->column_size == rhs.column_size);
     using result_val_type = decltype(std::declval<T>() - std::declval<U>());
@@ -225,7 +241,9 @@ template <typename T> template <typename U> auto Array<T>::operator-(const Array
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator*(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator*(const Array<U> &rhs) const
 {
     assert(this->row_size == rhs.row_size && this->column_size == rhs.column_size);
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
@@ -236,7 +254,9 @@ template <typename T> template <typename U> auto Array<T>::operator*(const Array
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator/(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator/(const Array<U> &rhs) const
 {
     assert(this->row_size == rhs.row_size && this->column_size == rhs.column_size);
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
@@ -247,7 +267,9 @@ template <typename T> template <typename U> auto Array<T>::operator/(const Array
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator+(const U &val) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator+(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() + std::declval<U>());
     Array<result_val_type> result(this->get_rows(), this->get_columns());
@@ -255,7 +277,9 @@ template <typename T> template <typename U> auto Array<T>::operator+(const U &va
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator-(const U &val) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator-(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() - std::declval<U>());
     Array<result_val_type> result(this->get_rows(), this->get_columns());
@@ -263,7 +287,9 @@ template <typename T> template <typename U> auto Array<T>::operator-(const U &va
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::operator*(const U &val) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator*(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
     Array<result_val_type> result(this->get_rows(), this->get_columns());
@@ -279,20 +305,24 @@ template <typename T> template <typename U> auto Array<T>::operator*(const U &va
 //    return result;
 //}
 
-template <typename T> template <typename U> auto Array<T>::operator/(const U &val) const
+template <typename T>
+template <typename U>
+auto Array<T>::operator/(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
     Array<result_val_type> result(this->get_rows(), this->get_columns());
-    for(size_t i = 0; i < this->get_rows(); i++)
-        for(size_t j = 0; j < this->get_columns(); j++)
-    {
-        result(i, j) = this->operator()(i,j) / val;
-    }
+    for (size_t i = 0; i < this->get_rows(); i++)
+        for (size_t j = 0; j < this->get_columns(); j++)
+        {
+            result(i, j) = this->operator()(i, j) / val;
+        }
     return result;
 }
 
 
-template <typename T> template <typename U> bool Array<T>::operator==(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+bool Array<T>::operator==(const Array<U> &rhs) const
 {
     for (size_t i = 0; i < this->row_size; i++)
         for (size_t j = 0; j < this->column_size; j++)
@@ -314,7 +344,9 @@ Array<T> Array<T>::transpose() const
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::dot(const Array<U> &rhs) const
+template <typename T>
+template <typename U>
+auto Array<T>::dot(const Array<U> &rhs) const
 {
     using result_val_type = decltype(std::declval<T>() + std::declval<T>() * std::declval<U>());
     Array<result_val_type> result(this->row_size, rhs.column_size);
@@ -329,18 +361,8 @@ template <typename T> template <typename U> auto Array<T>::dot(const Array<U> &r
     return result;
 }
 
-template <typename T> template <typename U> auto Array<T>::dot(const Vector<U> &rhs) const
-{
-    using result_val_type = decltype(std::declval<T>() + std::declval<T>() * std::declval<U>());
-    Vector<result_val_type> result(this->row_size);
-
-    for (size_t i = 0; i < this->get_rows(); ++i)
-        for (size_t j = 0; j < this->get_columns(); ++j)
-            result(i) += this->operator()(i, j) * rhs(j);
-    return result;
-}
-
-template <typename T> auto Array<T>::exp() const
+template <typename T>
+auto Array<T>::exp() const
 {
     using result_val_type = T;
     Array<result_val_type> result(this->row_size, this->column_size);
@@ -351,7 +373,8 @@ template <typename T> auto Array<T>::exp() const
     return result;
 }
 
-template <typename T> auto Array<T>::max(T value) const
+template <typename T>
+auto Array<T>::max(T value) const
 {
     using result_val_type = T;
     Array<result_val_type> result(this->row_size, this->column_size);
@@ -362,7 +385,8 @@ template <typename T> auto Array<T>::max(T value) const
     return result;
 }
 
-template <typename T> auto Array<T>::avg() const
+template <typename T>
+auto Array<T>::avg() const
 {
     T sum{};
     for (const auto &item : data)
@@ -373,22 +397,26 @@ template <typename T> auto Array<T>::avg() const
 
 //----------------------------------------------------- Accessors ------------------------------------------------------
 
-template <typename T> const std::valarray<T> &Array<T>::get_data() const
+template <typename T>
+const std::valarray<T> &Array<T>::get_data() const
 {
     return this->data;
 }
 
-template <typename T> size_t Array<T>::get_rows() const
+template <typename T>
+size_t Array<T>::get_rows() const
 {
     return this->row_size;
 }
 
-template <typename T> size_t Array<T>::get_columns() const
+template <typename T>
+size_t Array<T>::get_columns() const
 {
     return this->column_size;
 }
 
-template <typename T> std::ostream &operator<<(std::ostream &os, const Array<T> &matrix)
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const Array<T> &matrix)
 {
     os << "[";
     for (size_t i = 0; i < matrix.get_rows() - 1; i++)

@@ -21,12 +21,12 @@ public:
     DenseNode(std::vector<size_t> s,
               std::shared_ptr<LayerNode<T>> l,
               std::shared_ptr<Initializer<T>> init);
-    DenseNode(const DenseNode<T> &layer) = default;
-    DenseNode(DenseNode<T> &&layer) noexcept = default;
-    ~DenseNode() = default;
+    DenseNode(const DenseNode<T> &layer) = delete;
+    DenseNode(DenseNode<T> &&layer) noexcept = delete;
+    virtual ~DenseNode() = default;
 
-    DenseNode &operator=(const DenseNode &) = default;
-    DenseNode &operator=(DenseNode &&) noexcept = default;
+    DenseNode &operator=(const DenseNode &) = delete;
+    DenseNode &operator=(DenseNode &&) noexcept = delete;
 
 public:
     void add_next_layer(std::shared_ptr<LayerNode<T>> layer) override;

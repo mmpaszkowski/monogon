@@ -7,9 +7,16 @@
 
 #include "Metric.h"
 
-template <typename T>
+template <typename T = double>
 class CategoricalAccuracy : public Metric<T>
 {
+public:
+    CategoricalAccuracy() = default;//#TODO multidimensional __shape
+    CategoricalAccuracy(const CategoricalAccuracy&) = default;
+    CategoricalAccuracy(CategoricalAccuracy&&) noexcept = default;
+    CategoricalAccuracy& operator=(const CategoricalAccuracy&) = default;
+    CategoricalAccuracy& operator=(CategoricalAccuracy&&) noexcept = default;
+    virtual ~CategoricalAccuracy() = default;
 public:
     T operator()(const Array<T> &y_pred, const Array<T> &y) const override;
 };

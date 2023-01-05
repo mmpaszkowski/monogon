@@ -13,16 +13,16 @@ class InputNode : public LayerNode<T>
 {
 public:
     InputNode(std::vector<size_t> shape); //#TODO multidimensional __shape
-
+    InputNode(const InputNode&) = delete;
+    InputNode(InputNode&&) noexcept = delete;
+    InputNode& operator=(const InputNode&) = delete;
+    InputNode& operator=(InputNode&&) noexcept = delete;
+    virtual ~InputNode() = default;
 public:
     void add_next_layer(std::shared_ptr<LayerNode<T>> layer) override;
-
     std::vector<size_t> get_shape() const override;
-
     Variable<Array<T>> feed_forward(const Variable<Array<T>> &X) override;
-
     void update_weights(const Optimizer<T> &optimizer) override;
-
     void update_weights_chain(const Optimizer<T> &optimizer) override;
 
 private:

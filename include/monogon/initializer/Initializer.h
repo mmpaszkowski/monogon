@@ -6,6 +6,9 @@
 #define MONOGON_INITIALIZER_H
 
 #include <random>
+#include "../Array.h"
+#include "../Variable.h"
+
 template <typename T = double>
 class Initializer
 {
@@ -66,6 +69,21 @@ template <typename T>
 Variable<Array<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
 {
     Array<T> result(rows, cols, 1.0);
+    return Variable(result);
+}
+
+
+template <typename T = double>
+class Zeros : public Initializer<T>
+{
+public:
+    Variable<Array<T>> operator()(std::size_t rows, std::size_t cols) const override;
+};
+
+template <typename T>
+Variable<Array<T>> Zeros<T>::operator()(std::size_t rows, std::size_t cols) const
+{
+    Array<T> result(rows, cols, 0.0);
     return Variable(result);
 }
 

@@ -7,7 +7,10 @@ set(TEST_SOURCES
     variable.cpp
     layer.cpp
     loss.cpp
-    model.cpp)
+    model.cpp
+    activation_function.cpp
+    initializer.cpp
+    )
 
 FetchContent_Declare(
     googletest
@@ -37,6 +40,8 @@ if (MONOGON_ENABLE_COVERAGE)
         "${PROJECT_SOURCE_DIR}/docs/*"
         "${PROJECT_SOURCE_DIR}/external/*"
         "${PROJECT_SOURCE_DIR}/tests/*"
+        "${PROJECT_SOURCE_DIR}/benchmark/*"
+        "${PROJECT_SOURCE_DIR}/build/*"
         "/usr/include/*")
     setup_target_for_coverage_lcov(
         NAME ${COVERAGE_MAIN}

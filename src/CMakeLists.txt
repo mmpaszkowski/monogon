@@ -1,7 +1,9 @@
 # SOURCES AND HEADERS
 set(LIBRARY_SOURCES
     Shape.cpp
-    Index.cpp)
+    Index.cpp
+    low_level.cpp
+    )
 
 set(LIBRARY_HEADERS
     ../include/monogon/tool/Shape.h
@@ -18,7 +20,8 @@ set(LIBRARY_HEADERS
     ../include/monogon/view/ModelRenderer.h
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
-    ../include/monogon/utils/low_level.h low_level.cpp)
+    ../include/monogon/utils/low_level.h
+        ../include/monogon/layer/Conv2D.h)
 
 set(LIBRARY_INCLUDES
     ../include

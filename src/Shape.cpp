@@ -76,8 +76,9 @@ Shape::value_type Shape::size() const
 
 Index Shape::last_index() const
 {
-    // #Todo Index
-    return Index({1, 2, 3});
+    std::vector<value_type> result(this->size(), 0);
+    result[0] = data[0];
+    return Index(*this, result);
 }
 
 

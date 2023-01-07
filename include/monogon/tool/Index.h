@@ -26,6 +26,7 @@ public:
     Index(const std::vector<value_type> &d);
     Index(std::vector<value_type> &&d) noexcept;
     Index(Shape s);
+    Index(Shape s, const std::vector<value_type> &d);
     Index(const Index &i);
     Index(Index &&i) noexcept;
     ~Index();

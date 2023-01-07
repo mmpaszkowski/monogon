@@ -58,3 +58,8 @@ void mat_T_mat_mul(size_t m, size_t n, size_t k, const double *A, const double *
                 C,
                 static_cast<int>(k));
 }
+
+void conv_2D(size_t x, size_t y, size_t z, size_t w, double *A, size_t k, size_t l, size_t m, size_t n, double *B, double *C)
+{
+
+}

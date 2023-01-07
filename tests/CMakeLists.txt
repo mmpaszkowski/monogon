@@ -10,7 +10,7 @@ set(TEST_SOURCES
     model.cpp
     activation_function.cpp
     initializer.cpp
-    )
+        utlis.cpp)
 
 FetchContent_Declare(
     googletest

@@ -19,6 +19,10 @@ Index::Index(Shape s) : data(s.size()), shape(s)
 {
 }
 
+Index::Index(Shape s, const std::vector<value_type> &d): data(d), shape(s)
+{
+}
+
 Index::Index(const Index &index) = default;
 
 Index::Index(Index &&index) noexcept : data(std::move(index.data)), shape(std::move(index.shape))

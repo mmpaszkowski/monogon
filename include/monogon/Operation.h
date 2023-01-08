@@ -37,7 +37,7 @@ struct Init<Array<U>>
     template <typename V>
     Array<U> initialize(const Array<U> &val_type, V value) const
     {
-        return Array<U>(val_type.get_rows(), val_type.get_columns(), value);
+        return Array<U>(val_type.get_shape()(-2), val_type.get_columns(), value);
     }
 };
 
@@ -77,17 +77,26 @@ struct AddOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        Array<U> l_result = Array<U>(lhs_val.get_rows(), lhs_val.get_columns(), 0.0);
-        Array<V> r_result = Array<V>(rhs_val.get_rows(), rhs_val.get_columns(), 0.0);
+        Array<U> l_result = Array<U>(lhs_val.get_shape()(-2), lhs_val.get_columns(), 0.0);
+        Array<V> r_result = Array<V>(rhs_val.get_shape()(-2), rhs_val.get_columns(), 0.0);
 
-        for (size_t i = 0; i < grad_val.get_rows(); i++)
+        size_t g_rows = grad_val.get_shape()(-2);
+        size_t g_cols = grad_val.get_shape()(-1);
+
+        size_t l_result_rows = l_result.get_shape()(-2);
+        size_t l_result_cols = l_result.get_shape()(-1);
+
+        size_t r_result_rows = r_result.get_shape()(-2);
+        size_t r_result_cols = r_result.get_shape()(-1);
+
+        for (size_t i = 0; i < g_rows; i++)
         {
-            for (size_t j = 0; j < grad_val.get_columns(); j++)
+            for (size_t j = 0; j < g_cols; j++)
             {
-                r_result(i % r_result.get_rows(), j % r_result.get_columns()) =
-                    r_result(i % r_result.get_rows(), j % r_result.get_columns()) + grad_val(i, j);
-                l_result(i % l_result.get_rows(), j % l_result.get_columns()) =
-                    l_result(i % l_result.get_rows(), j % l_result.get_columns()) + grad_val(i, j);
+                r_result(i % r_result_rows, j % r_result_cols) =
+                    r_result(i % r_result_rows, j % r_result_cols) + grad_val(i, j);
+                l_result(i % l_result_rows, j % l_result_cols) =
+                    l_result(i % l_result_rows, j % l_result_cols) + grad_val(i, j);
             }
         }
         return std::tuple(l_result, r_result);
@@ -173,18 +182,18 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        lhs_type l_result(grad_val.get_rows(), rhs_val.get_rows());
-        rhs_type r_result(lhs_val.get_columns(), grad_val.get_columns());
+        lhs_type l_result(grad_val.get_shape()(-2), rhs_val.get_shape()(-2));
+        rhs_type r_result(lhs_val.get_shape()(-1), grad_val.get_shape()(-1));
 
         mat_T_mat_mul(lhs_val.get_columns(),
-                      lhs_val.get_rows(),
+                      lhs_val.get_shape()(-2),
                       grad_val.get_columns(),
                       &lhs_val(0, 0),
                       &grad_val(0, 0),
                       &r_result(0, 0));
-        mat_mat_T_mul(grad_val.get_rows(),
+        mat_mat_T_mul(grad_val.get_shape()(-2),
                       grad_val.get_columns(),
-                      rhs_val.get_rows(),
+                      rhs_val.get_shape()(-2),
                       &grad_val(0, 0),
                       &rhs_val(0, 0),
                       &l_result(0, 0));
@@ -207,16 +216,20 @@ struct MaxOperation<T, Array<U>, V> : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_value = std::any_cast<rhs_type>(rhs);
-        grad_type grad_value = std::any_cast<grad_type>(grad);
-        lhs_type lhs_result(lhs_value.get_rows(), lhs_value.get_columns());
+        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
+        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+        grad_type grad_val = std::any_cast<grad_type>(grad);
 
-        for (size_t i = 0; i < lhs_value.get_rows(); i++)
-            for (size_t j = 0; j < lhs_value.get_columns(); j++)
-                lhs_result(i, j) = lhs_value(i, j) < rhs_value ? U(0.0) : U(1.0);
+        size_t l_val_rows = lhs_val.get_shape()(-2);
+        size_t l_val_cols = lhs_val.get_shape()(-1);
 
-        return std::tuple(grad_value * lhs_result, rhs_type(0.0));
+        lhs_type lhs_result(l_val_rows, l_val_cols);
+
+        for (size_t i = 0; i < l_val_rows; i++)
+            for (size_t j = 0; j < l_val_cols; j++)
+                lhs_result(i, j) = lhs_val(i, j) < rhs_val ? U(0.0) : U(1.0);
+
+        return std::tuple(grad_val * lhs_result, rhs_type(0.0));
     }
 };
 
@@ -234,9 +247,9 @@ struct AvgOperation<T, Array<U>> : public Operation
         lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
         grad_type grad_value = std::any_cast<grad_type>(grad);
 
-        Array<U> l_result = Array<U>(lhs_value.get_rows(),
-                                     lhs_value.get_columns(),
-                                     1.0 / static_cast<double>(lhs_value.get_rows() * lhs_value.get_columns())) *
+        Array<U> l_result = Array<U>(lhs_value.get_shape()(-2),
+                                     lhs_value.get_shape()(-1),
+                                     1.0 / static_cast<double>(lhs_value.get_shape()(-2) * lhs_value.get_shape()(-1))) *
                             grad_value;
         return std::tuple(l_result, std::any());
     }

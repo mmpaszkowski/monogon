@@ -75,7 +75,7 @@ void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::siz
         ModelRenderer modelRenderer;
         CategoricalAccuracy<T> categoricalAccuracy;
         modelRenderer.render_epoch(i + 1, epochs);
-        for (size_t j = 0; j < x.get_rows(); j += batch_size)
+        for (size_t j = 0; j < x.get_shape()(-2); j += batch_size)
         {
             Array sub_x = slicer(x, j, j + batch_size);
             Array sub_y = slicer(y, j, j + batch_size);
@@ -88,7 +88,7 @@ void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::siz
             begin->update_weights_chain(*optimizer);
             loss_val.zero_grad();
             modelRenderer.render_progress_bar(j / batch_size + 1,
-                                              x.get_rows() / batch_size,
+                                              x.get_shape()(-2) / batch_size,
                                               total_loss / static_cast<T>(total_batches),
                                               total_accuracy / static_cast<T>(total_batches));
         }

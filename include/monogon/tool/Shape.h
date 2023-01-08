@@ -46,6 +46,8 @@ public:
 
 public:
     value_type size() const;
+    value_type length() const;
+    Index index() const;
     Index last_index() const;
     iterator begin() noexcept;
     const_iterator begin() const noexcept;

@@ -3,6 +3,7 @@
 //
 
 #include <monogon/tool/Index.h>
+#include <numeric>
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
 Shape::Shape() : data()
@@ -74,13 +75,23 @@ Shape::value_type Shape::size() const
     return data.size();
 }
 
+Shape::value_type Shape::length() const
+{
+    return std::accumulate(data.begin(), data.end(), size_t{1}, std::multiplies());
+}
+
+Index Shape::index() const
+{
+    std::vector<value_type> result(this->size(), 0);
+    return {*this, result};
+}
+
 Index Shape::last_index() const
 {
     std::vector<value_type> result(this->size(), 0);
     result[0] = data[0];
-    return Index(*this, result);
+    return {*this, result};
 }
-
 
 Shape::iterator Shape::begin() noexcept
 {

@@ -25,12 +25,15 @@ template <typename T>
 T CategoricalAccuracy<T>::operator()(const Array<T> &y_pred, const Array<T> &y) const
 {
     size_t result = 0;
-    for (std::size_t i = 0; i < y.get_rows(); i++)
+    size_t y_rows = y.get_shape()(-2);
+    size_t y_cols = y.get_shape()(-1);
+
+    for (std::size_t i = 0; i < y_rows; i++)
     {
         size_t max1 = 0;
         size_t max2 = 0;
 
-        for (size_t j = 0; j < y.get_columns(); j++)
+        for (size_t j = 0; j < y_cols; j++)
         {
             if (y_pred(i, j) > y_pred(i, max1))
                 max1 = j;
@@ -40,7 +43,7 @@ T CategoricalAccuracy<T>::operator()(const Array<T> &y_pred, const Array<T> &y) 
         if (max1 == max2)
             result++;
     }
-    return static_cast<double>(result) / static_cast<double>(y.get_rows());
+    return static_cast<double>(result) / static_cast<double>(y_rows);
 }
 
 #endif //MONOGON_CATEGORICAL_ACCURACY_H

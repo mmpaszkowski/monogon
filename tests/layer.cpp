@@ -48,7 +48,6 @@ TEST(layer, input_feed_forward)
     Y.back_propagation();
     Array x = X.get_value();
     Array y = Y.get_value();
-    std::cout << y;
     EXPECT_TRUE(x == zeros(2, 4).get_value());
     dense_moved.update_weights_chain(sgd);
     dense_moved.update_weights(sgd);

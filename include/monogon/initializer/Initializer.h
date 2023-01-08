@@ -50,7 +50,7 @@ Variable<Array<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t co
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(-limit, limit);
 
-    Array<T> result(rows, cols);
+    Array<T> result(Shape({rows, cols}));
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
             result(i, j) = dis(gen);
@@ -68,7 +68,7 @@ public:
 template <typename T>
 Variable<Array<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
 {
-    Array<T> result(rows, cols, 1.0);
+    Array<T> result(Shape({rows, cols}), 1.0);
     return Variable(result);
 }
 
@@ -83,7 +83,7 @@ public:
 template <typename T>
 Variable<Array<T>> Zeros<T>::operator()(std::size_t rows, std::size_t cols) const
 {
-    Array<T> result(rows, cols, 0.0);
+    Array<T> result(Shape({rows, cols}), 0.0);
     return Variable(result);
 }
 

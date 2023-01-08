@@ -65,4 +65,31 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const Shape &variable);
 };
 
+inline Shape::value_type &Shape::operator[](value_type i)
+{
+    return data[i];
+}
+
+inline Shape::const_reference Shape::operator[](value_type i) const
+{
+    return data[i];
+}
+
+inline Shape::value_type &Shape::operator()(long long i)
+{
+    if (i < 0)
+        return data[data.size() + static_cast<size_type>(i)];
+    else
+        return data[static_cast<size_type>(i)];
+}
+
+inline Shape::const_reference Shape::operator()(long long i) const
+{
+    if (i < 0)
+        return data[data.size() + static_cast<size_type>(i)];
+    else
+        return data[static_cast<size_type>(i)];
+}
+
+
 #endif //MONOGON_SHAPE_H

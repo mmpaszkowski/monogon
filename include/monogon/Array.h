@@ -22,10 +22,8 @@ public:
     using value_type = T;
     using size_type = std::size_t;
     Array();
-    Array(size_t row, size_t column);
     Array(Shape shape);
-    Array(size_t row, size_t column, const T &value);
-
+    Array(Shape shape, const T &value);
     ~Array();
 
     template <template <typename...> typename Container>
@@ -78,12 +76,10 @@ public:
 
 public:
     const std::valarray<value_type> &get_data() const;
-    size_type get_columns() const;
     const Shape& get_shape() const;
 
 private:
     std::valarray<value_type> data;
-    size_t column_size;
     Shape shape;
 public:
     template <typename U>
@@ -93,33 +89,27 @@ public:
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
 template <typename T>
-Array<T>::Array() : data(), column_size(0)
-{
-}
-
-template <typename T>
-Array<T>::Array(size_t row, size_t column) : data(row * column), column_size(column), shape({row, column})
+Array<T>::Array() : data(), shape()
 {
 }
 
 template <typename T>
 Array<T>::Array(Shape sh) : data(sh.length()), shape(sh)
 {
-    column_size = sh(-1);
+
 }
 
 template <typename T>
-Array<T>::Array(size_t row, size_t column, const T &value) : data(row * column), column_size(column), shape({row, column})
+Array<T>::Array(Shape sh, const T &value) : data(value, sh.length()), shape(sh)
 {
-    for (auto &&item : data)
-        item = value;
+
 }
 
 template <typename T>
 Array<T>::~Array() = default;
 
 template <typename T>
-Array<T>::Array(std::initializer_list<T> list) : column_size(1), shape({list.size()})
+Array<T>::Array(std::initializer_list<T> list) : shape({list.size()})
 {
     this->data.resize(list.size());
     size_t i = 0;
@@ -129,9 +119,9 @@ Array<T>::Array(std::initializer_list<T> list) : column_size(1), shape({list.siz
 
 template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
-    : column_size(nasted_list.begin()->size()), shape({nasted_list.size(), nasted_list.begin()->size()})
+    : shape({nasted_list.size(), nasted_list.begin()->size()})
 {
-    this->data.resize(this->shape(-2) * this->column_size);
+    this->data.resize(this->shape(-2) * this->shape(-1));
     size_t i = 0;
     for (const auto &list : nasted_list)
         for (const auto &item : list)
@@ -165,10 +155,10 @@ Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_lis
 
 template <typename T>
 template <template <typename...> typename Container>
-Array<T>::Array(const Container<T> &container) :  column_size(1), shape({container.size()})
+Array<T>::Array(const Container<T> &container) : shape({container.size()})
 
 {
-    this->data.resize(this->shape(-2) * this->column_size);
+    this->data.resize(this->shape(-1));
     size_t i = 0;
     for (const auto &item : container)
         data[i++] = item;
@@ -177,9 +167,9 @@ Array<T>::Array(const Container<T> &container) :  column_size(1), shape({contain
 template <typename T>
 template <template <typename...> typename Container, template <typename...> typename NestedContainer>
 Array<T>::Array(const Container<NestedContainer<T>> &container)
-    : column_size(container.begin()->size()), shape({container.size(), container.begin()->size()})
+    : shape({container.size(), container.begin()->size()})
 {
-    this->data.resize(this->shape(-2) * this->column_size);
+    this->data.resize(this->shape(-2) * this->shape(-1));
 
     for (size_t i = 0, k = 0; i < container.size(); ++i)
         for (size_t j = 0; j < container[i].size(); ++j)
@@ -188,13 +178,13 @@ Array<T>::Array(const Container<NestedContainer<T>> &container)
 
 
 template <typename T>
-Array<T>::Array(const Array<T> &rhs) : data(rhs.data), column_size(rhs.column_size), shape(rhs.shape)
+Array<T>::Array(const Array<T> &rhs) : data(rhs.data), shape(rhs.shape)
 {
 }
 
 template <typename T>
 Array<T>::Array(Array<T> &&rhs) noexcept
-    : data(std::move(rhs.data)), column_size(std::move(rhs.column_size)), shape(std::move(rhs.shape))
+    : data(std::move(rhs.data)), shape(std::move(rhs.shape))
 {
 }
 
@@ -202,7 +192,6 @@ template <typename T>
 Array<T> &Array<T>::operator=(const Array<T> &rhs)
 {
     this->data = rhs.data;
-    this->column_size = rhs.column_size;
     this->shape = rhs.shape;
     return *this;
 }
@@ -211,7 +200,6 @@ template <typename T>
 Array<T> &Array<T>::operator=(Array<T> &&rhs) noexcept
 {
     this->data = std::move(rhs.data);
-    this->column_size = std::move(rhs.column_size);
     this->shape = std::move(rhs.shape);
     return *this;
 }
@@ -233,13 +221,13 @@ const T &Array<T>::operator()(std::size_t idx) const
 template <typename T>
 T &Array<T>::operator()(std::size_t row, std::size_t column)
 {
-    return data[row * column_size + column];
+    return data[row * shape(-1) + column];
 }
 
 template <typename T>
 const T &Array<T>::operator()(std::size_t row, std::size_t column) const
 {
-    return data[row * column_size + column];
+    return data[row * shape(-1) + column];
 }
 
 template <typename T>
@@ -265,7 +253,7 @@ const T &Array<T>::operator()(const Index &index) const
 template <typename T>
 auto Array<T>::operator-() const
 {
-    Array<T> result(this->shape(-2), this->column_size);
+    Array<T> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = -this->data;
 
     return result;
@@ -276,16 +264,23 @@ template <typename U>
 auto Array<T>::operator+(const Array<U> &rhs) const
 {
     using result_val_type = decltype(std::declval<T>() + std::declval<U>());
-    Array<result_val_type> result(std::max(this->shape(-2), rhs.shape(-2)),
-                                  std::max(this->column_size, rhs.get_columns()));
+    Array<result_val_type> result(Shape({std::max(this->shape(-2), rhs.shape(-2)),
+                                  std::max(this->shape(-1), rhs.shape(-1))}));
 
-    //    #pragma omp parallel for private(i,j) shared(result,*this,rhs)
-    for (size_t i = 0; i < result.shape(-2); i++)
+    size_t result_rows = result.shape(-2);
+    size_t result_cols = result.shape(-1);
+
+    size_t rows = shape(-2);
+    size_t cols = shape(-1);
+
+    size_t rhs_rows = rhs.shape(-2);
+    size_t rhs_cols = rhs.shape(-1);
+
+    for (size_t i = 0; i < result_rows; i++)
     {
-        for (size_t j = 0; j < result.get_columns(); j++)
+        for (size_t j = 0; j < result_cols; j++)
         {
-            result(i, j) = this->operator()(i % this->shape(-2), j % this->get_columns()) +
-                           rhs(i % rhs.shape(-2), j % rhs.get_columns());
+            result(i, j) = this->operator()(i % rows, j % cols) + rhs(i % rhs_rows, j % rhs_cols);
         }
     }
     return result;
@@ -295,10 +290,10 @@ template <typename T>
 template <typename U>
 auto Array<T>::operator-(const Array<U> &rhs) const
 {
-    assert(this->shape(-2) == rhs.shape(-2) && this->column_size == rhs.column_size);
+    assert(this->shape(-2) == rhs.shape(-2) && this->shape(-1) == rhs.shape(-1));
     using result_val_type = decltype(std::declval<T>() - std::declval<U>());
 
-    Array<result_val_type> result(this->shape(-2), this->column_size);
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = this->data - rhs.data;
 
     return result;
@@ -308,10 +303,10 @@ template <typename T>
 template <typename U>
 auto Array<T>::operator*(const Array<U> &rhs) const
 {
-    assert(this->shape(-2) == rhs.shape(-2) && this->column_size == rhs.column_size);
+    assert(this->shape(-2) == rhs.shape(-2) && this->shape(-1) == rhs.shape(-1));
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
 
-    Array<result_val_type> result(this->shape(-2), this->column_size);
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = this->data * rhs.data;
 
     return result;
@@ -321,10 +316,10 @@ template <typename T>
 template <typename U>
 auto Array<T>::operator/(const Array<U> &rhs) const
 {
-    assert(this->shape(-2) == rhs.shape(-2) && this->column_size == rhs.column_size);
+    assert(this->shape(-2) == rhs.shape(-2) && this->shape(-1) == rhs.shape(-1));
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
 
-    Array<result_val_type> result(this->shape(-2), this->column_size);
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = this->data / rhs.data;
 
     return result;
@@ -335,7 +330,7 @@ template <typename U>
 auto Array<T>::operator+(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() + std::declval<U>());
-    Array<result_val_type> result(this->shape(-2), this->get_columns());
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = data + val;
     return result;
 }
@@ -345,7 +340,7 @@ template <typename U>
 auto Array<T>::operator-(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() - std::declval<U>());
-    Array<result_val_type> result(this->shape(-2), this->get_columns());
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
     result.data = data - val;
     return result;
 }
@@ -355,7 +350,7 @@ template <typename U>
 auto Array<T>::operator*(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() * std::declval<U>());
-    Array<result_val_type> result(this->shape(-2), this->get_columns());
+    Array<result_val_type> result(Shape({this->shape(-2), this->get_shape()(-1)}));
     result.data = data * val;
     return result;
 }
@@ -373,7 +368,7 @@ template <typename U>
 auto Array<T>::operator/(const U &val) const
 {
     using result_val_type = decltype(std::declval<T>() / std::declval<U>());
-    Array<result_val_type> result(this->shape(-2), this->shape(-1));
+    Array<result_val_type> result(Shape({this->shape(-2), this->shape(-1)}));
 
     size_t rows = this->shape(-2);
     size_t cols = this->shape(-1);
@@ -402,7 +397,7 @@ bool Array<T>::operator==(const Array<U> &rhs) const
 template <typename T>
 Array<T> Array<T>::transpose() const
 {
-    Array<T> result(this->shape(-1), this->shape(-2));
+    Array<T> result(Shape({this->shape(-1), this->shape(-2)}));
 
     for (size_t i = 0; i < this->shape(-2); i++)
         for (size_t j = 0; j < this->shape(-1); j++)
@@ -455,7 +450,7 @@ auto Array<T>::exp() const
     size_t rows = this->shape(-2);
     size_t cols = this->shape(-1);
 
-    Array<result_val_type> result(rows, cols);
+    Array<result_val_type> result(Shape({rows, cols}));
 
     for (size_t i = 0; i < rows; ++i)
         for (size_t j = 0; j < cols; ++j)
@@ -472,7 +467,7 @@ auto Array<T>::max(T value) const
     size_t rows = this->shape(-2);
     size_t cols = this->shape(-1);
 
-    Array<result_val_type> result(rows, cols);
+    Array<result_val_type> result(Shape({rows, cols}));
 
     for (size_t i = 0; i < rows; ++i)
         for (size_t j = 0; j < cols; ++j)
@@ -496,12 +491,6 @@ template <typename T>
 const std::valarray<T> &Array<T>::get_data() const
 {
     return this->data;
-}
-
-template <typename T>
-size_t Array<T>::get_columns() const
-{
-    return this->column_size;
 }
 
 template <typename T>

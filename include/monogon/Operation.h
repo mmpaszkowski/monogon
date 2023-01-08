@@ -37,7 +37,7 @@ struct Init<Array<U>>
     template <typename V>
     Array<U> initialize(const Array<U> &val_type, V value) const
     {
-        return Array<U>(val_type.get_shape()(-2), val_type.get_columns(), value);
+        return Array<U>(Shape({val_type.get_shape()(-2), val_type.get_shape()(-1)}), value);
     }
 };
 
@@ -77,8 +77,8 @@ struct AddOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        Array<U> l_result = Array<U>(lhs_val.get_shape()(-2), lhs_val.get_columns(), 0.0);
-        Array<V> r_result = Array<V>(rhs_val.get_shape()(-2), rhs_val.get_columns(), 0.0);
+        Array<U> l_result = Array<U>(Shape({lhs_val.get_shape()(-2), lhs_val.get_shape()(-1)}), 0.0);
+        Array<V> r_result = Array<V>(Shape({rhs_val.get_shape()(-2), rhs_val.get_shape()(-1)}), 0.0);
 
         size_t g_rows = grad_val.get_shape()(-2);
         size_t g_cols = grad_val.get_shape()(-1);
@@ -182,17 +182,17 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
         lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
         rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
 
-        lhs_type l_result(grad_val.get_shape()(-2), rhs_val.get_shape()(-2));
-        rhs_type r_result(lhs_val.get_shape()(-1), grad_val.get_shape()(-1));
+        lhs_type l_result(Shape({grad_val.get_shape()(-2), rhs_val.get_shape()(-2)}));
+        rhs_type r_result(Shape({lhs_val.get_shape()(-1), grad_val.get_shape()(-1)}));
 
-        mat_T_mat_mul(lhs_val.get_columns(),
+        mat_T_mat_mul(lhs_val.get_shape()(-1),
                       lhs_val.get_shape()(-2),
-                      grad_val.get_columns(),
+                      grad_val.get_shape()(-1),
                       &lhs_val(0, 0),
                       &grad_val(0, 0),
                       &r_result(0, 0));
         mat_mat_T_mul(grad_val.get_shape()(-2),
-                      grad_val.get_columns(),
+                      grad_val.get_shape()(-1),
                       rhs_val.get_shape()(-2),
                       &grad_val(0, 0),
                       &rhs_val(0, 0),
@@ -223,7 +223,7 @@ struct MaxOperation<T, Array<U>, V> : public Operation
         size_t l_val_rows = lhs_val.get_shape()(-2);
         size_t l_val_cols = lhs_val.get_shape()(-1);
 
-        lhs_type lhs_result(l_val_rows, l_val_cols);
+        lhs_type lhs_result(Shape({l_val_rows, l_val_cols}));
 
         for (size_t i = 0; i < l_val_rows; i++)
             for (size_t j = 0; j < l_val_cols; j++)
@@ -247,8 +247,8 @@ struct AvgOperation<T, Array<U>> : public Operation
         lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
         grad_type grad_value = std::any_cast<grad_type>(grad);
 
-        Array<U> l_result = Array<U>(lhs_value.get_shape()(-2),
-                                     lhs_value.get_shape()(-1),
+        Array<U> l_result = Array<U>(Shape({lhs_value.get_shape()(-2),
+                                     lhs_value.get_shape()(-1)}),
                                      1.0 / static_cast<double>(lhs_value.get_shape()(-2) * lhs_value.get_shape()(-1))) *
                             grad_value;
         return std::tuple(l_result, std::any());

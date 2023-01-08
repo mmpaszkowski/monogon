@@ -8,26 +8,29 @@
 
 Shape::Shape() : data()
 {
+
 }
 
 Shape::Shape(const std::vector<value_type> &d) : data(d)
 {
+
 }
 
 Shape::Shape(std::vector<value_type> &&d) noexcept : data(std::move(d))
 {
+
 }
 
 Shape::Shape(const Shape &shape) = default;
 
 Shape::Shape(Shape &&shape) noexcept : data(std::move(shape.data))
 {
+
 }
 
 Shape::~Shape() = default;
 
 //---------------------------------------------------- Operators -------------------------------------------------------
-
 
 Shape &Shape::operator=(const Shape &rhs) = default;
 
@@ -35,32 +38,6 @@ Shape &Shape::operator=(Shape &&rhs) noexcept
 {
     this->data = std::move(rhs.data);
     return *this;
-}
-
-Shape::value_type &Shape::operator[](value_type i)
-{
-    return data[i];
-}
-
-Shape::const_reference Shape::operator[](value_type i) const
-{
-    return data[i];
-}
-
-Shape::value_type &Shape::operator()(long long i)
-{
-    if (i < 0)
-        return data[data.size() + static_cast<size_type>(i)];
-    else
-        return data[static_cast<size_type>(i)];
-}
-
-Shape::const_reference Shape::operator()(long long i) const
-{
-    if (i < 0)
-        return data[data.size() + static_cast<size_type>(i)];
-    else
-        return data[static_cast<size_type>(i)];
 }
 
 bool Shape::operator==(const Shape &rhs) const

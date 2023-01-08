@@ -222,10 +222,10 @@ TEST(variable, complex)
     Variable<Array<double>> x = Variable(Array<double>{{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.0, 1.0}});
 
     Variable<Array<double>> y = Variable(Array<double>{std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{0.0}, std::initializer_list<double>{1.0}});
-    Variable<Array<double>> weights1 = Variable(Array<double>(in_features, layer1, 1.0));
-    Variable<Array<double>> weights2 = Variable(Array<double>(layer1, classes, 1.0));
-    Variable<Array<double>> bias1 = Variable(Array<double>(1, layer1, 1.0));
-    Variable<Array<double>> bias2 = Variable(Array<double>(1, classes, 1.0));
+    Variable<Array<double>> weights1 = Variable(Array<double>(Shape({in_features, layer1}), 1.0));
+    Variable<Array<double>> weights2 = Variable(Array<double>(Shape({layer1, classes}), 1.0));
+    Variable<Array<double>> bias1 = Variable(Array<double>(Shape({1, layer1}), 1.0));
+    Variable<Array<double>> bias2 = Variable(Array<double>(Shape({1, classes}), 1.0));
 
     Variable y_pred1 = x.dot(weights1) + bias1;
     Variable y_pred = y_pred1.dot(weights2) + bias2;

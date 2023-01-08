@@ -50,7 +50,7 @@ DenseNode<T>::DenseNode(std::vector<size_t> s,
                         std::shared_ptr<LayerNode<T>> l,
                         std::shared_ptr<Initializer<T>> init)
     : shape(s), initializer(init), weights(init->operator()(l->get_shape()[0], s[0])),
-      bias(Array<T>(1, this->shape[0], 0.0))
+      bias(Array<T>(Shape({1, this->shape[0]}), 0.0))
 {
     assert(this->shape.size() == 1 && l->get_shape().size() == 1);
 }

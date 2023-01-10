@@ -3,7 +3,7 @@ set(TEST_SOURCES
     metric.cpp
     vector.cpp
     array.cpp
-    one_hot.cpp
+        tool.cpp
     variable.cpp
     layer.cpp
     loss.cpp

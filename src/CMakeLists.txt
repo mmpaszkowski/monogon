@@ -11,7 +11,6 @@ set(LIBRARY_HEADERS
     ../include/monogon/tool/OneHot.h
     ../include/monogon/tool/Slice.h
     ../include/monogon/metric/Metric.h
-    ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/Array.h
     ../include/monogon/Operation.h
     ../include/monogon/Variable.h
@@ -21,7 +20,9 @@ set(LIBRARY_HEADERS
     ../include/monogon/metric/Metric.h
     ../include/monogon/metric/CategoricalAccuracy.h
     ../include/monogon/utils/low_level.h
-        ../include/monogon/layer/Conv2D.h)
+    ../include/monogon/layer/Conv2D.h
+    ../include/monogon/tool/ArgMax.h
+    ../include/monogon/tool/ConfusionMatrix.h)
 
 set(LIBRARY_INCLUDES
     ../include

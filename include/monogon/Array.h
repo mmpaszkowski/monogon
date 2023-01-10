@@ -537,4 +537,16 @@ template <typename U> std::ostream &operator<<(std::ostream &os, const Array<U> 
     return os;
 }
 
+template<typename T> std::vector<std::vector<T>> to_vector_2d(const Array<T>& array)
+{
+    std::vector<std::vector<size_t>> result(array.get_shape()(0), std::vector<T>(array.get_shape()(1)));
+
+    for(size_t i = 0; i < result.size(); i++)
+        for(size_t j = 0; j < result.size(); j++)
+    {
+        result[i][j] = array(i, j);
+    }
+    return result;
+}
+
 #endif //MONOGON_ARRAY_H

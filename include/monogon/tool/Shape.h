@@ -5,7 +5,6 @@
 #ifndef MONOGON_SHAPE_H
 #define MONOGON_SHAPE_H
 
-
 #include <cstddef>
 #include <ostream>
 #include <vector>
@@ -90,6 +89,5 @@ inline Shape::const_reference Shape::operator()(long long i) const
     else
         return data[static_cast<size_type>(i)];
 }
-
 
 #endif //MONOGON_SHAPE_H

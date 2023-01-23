@@ -22,7 +22,7 @@ set(LIBRARY_HEADERS
     ../include/monogon/utils/low_level.h
     ../include/monogon/layer/Conv2D.h
     ../include/monogon/tool/ArgMax.h
-    ../include/monogon/tool/ConfusionMatrix.h)
+    ../include/monogon/tool/ConfusionMatrix.h ../include/monogon/layer/BatchNormalization.h)
 
 set(LIBRARY_INCLUDES
     ../include

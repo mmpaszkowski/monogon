@@ -59,6 +59,12 @@ void mat_T_mat_mul(size_t m, size_t n, size_t k, const double *A, const double *
                 static_cast<int>(k));
 }
 
+void mat_T_mat_sum(size_t n, const double *A, const double *B, double *C)
+{
+    cblas_dcopy(n, A, 1, C, 1);
+    cblas_daxpy(n, 1.0, B, 1, C, 1);
+}
+
 void conv_2D(size_t x, size_t y, size_t z, size_t w, double *A, size_t k, size_t l, size_t m, size_t n, double *B, double *C)
 {
 

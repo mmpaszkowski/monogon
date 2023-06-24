@@ -43,7 +43,7 @@ TEST(relu, move_assignment)
 
 TEST(relu, call_operator)
 {
-    Variable A = Variable<Array<double>>({{-3.0, -2.0, -1.0}, {1.0, 2.0, 3.0}});
+    Variable A = Variable(Array<double>({{-3.0, -2.0, -1.0}, {1.0, 2.0, 3.0}}));
     Array expected_A = {{0.0, 0.0, 0.0}, {1.0, 2.0, 3.0}};
     ReLu reLu;
 
@@ -88,7 +88,7 @@ TEST(sigmoid, move_assignment)
 
 TEST(sigmoid, call_operator)
 {
-    Variable A = Variable<Array<double>>({{-3.0, -2.0, -1.0}, {1.0, 2.0, 3.0}});
+    Variable A(Array<double>{{-3.0, -2.0, -1.0}, {1.0, 2.0, 3.0}});
     Array expected_A = {{0.047426, 0.119203, 0.268941}, {0.731059, 0.880797, 0.952574}};
     Sigmoid sigmoid;
     Array result = sigmoid(A).get_value();

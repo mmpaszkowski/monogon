@@ -79,7 +79,7 @@ void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::siz
         {
             Array sub_x = slicer(x, j, j + batch_size);
             Array sub_y = slicer(y, j, j + batch_size);
-            Variable y_pred = begin->feed_forward(Variable(sub_x));
+            Variable y_pred = begin->feed_forward(Variable(std::move(sub_x)));
             Variable loss_val = (*this->loss)(y_pred, Variable(sub_y));
             loss_val.back_propagation();
             total_loss += loss_val.get_value();
@@ -99,7 +99,7 @@ void Model<T>::fit(const Array<T> &x, const Array<T> &y, size_t epochs, std::siz
 template <typename T>
 Array<T> Model<T>::predict(Array<T> x)
 {
-    return begin->feed_forward(Variable(x)).get_value();
+    return begin->feed_forward(std::move(Variable(x))).get_value();
 }
 
 #endif //MONOGON_MODEL_H

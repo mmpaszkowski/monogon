@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <variant>
+#include <utility>
 
 class AbstractVariableNode
 {
@@ -28,9 +29,9 @@ public:
     virtual void back_propagation() const = 0;
 
 protected:
-    virtual void back_propagation(std::any) const = 0;
+    virtual void back_propagation(const std::any&) const = 0;
     virtual void zero_grad() const = 0;
-    virtual std::any get_any_value() const = 0;
+    virtual std::any get_any_value() const noexcept = 0;
 
     template <typename U>
     friend class VariableNode;
@@ -42,11 +43,14 @@ class VariableNode : public AbstractVariableNode
 public:
     VariableNode();
 
-    explicit VariableNode(T val);
+    explicit VariableNode(T&& val);
+    explicit VariableNode(const T& val);
 
-    VariableNode(T val, std::shared_ptr<const AbstractVariableNode> l, std::shared_ptr<Operation> op);
+    template <typename V>
+    VariableNode(V&& val, std::shared_ptr<const AbstractVariableNode> l, std::shared_ptr<Operation> op);
 
-    VariableNode(T val,
+    template <typename V>
+    VariableNode(V&& val,
                  std::shared_ptr<const AbstractVariableNode> l,
                  std::shared_ptr<const AbstractVariableNode> r,
                  std::shared_ptr<Operation> op);
@@ -58,7 +62,7 @@ public:
     auto operator=(VariableNode<U> &&rhs) = delete;
 
     void back_propagation() const override;
-    void back_propagation(std::any) const override;
+    void back_propagation(const std::any&) const override;
     void zero_grad() const override;
 
 public:
@@ -68,7 +72,7 @@ public:
 
 public:
 protected:
-    std::any get_any_value() const override;
+    std::any get_any_value() const noexcept override { return std::any(std::cref(this->value)); }
 
 private:
     T value;
@@ -92,18 +96,23 @@ VariableNode<T>::VariableNode() : value(), grad(), operation(), lhs(), rhs()
 }
 
 template <typename T>
-VariableNode<T>::VariableNode(T val) : value(val), grad(), operation(), lhs(), rhs()
+VariableNode<T>::VariableNode(T&& val) : value(std::move(val)), grad(), operation(), lhs(), rhs()
 {
 }
 
 template <typename T>
-VariableNode<T>::VariableNode(T val, std::shared_ptr<const AbstractVariableNode> l, std::shared_ptr<Operation> op)
-    : value(val), grad(), operation(std::move(op)), lhs(std::move(l)), rhs()
+VariableNode<T>::VariableNode(const T& val) : value(val), grad(), operation(), lhs(), rhs()
 {
 }
 
-template <typename T>
-VariableNode<T>::VariableNode(T val,
+template <typename T> template <typename V>
+VariableNode<T>::VariableNode(V&& val, std::shared_ptr<const AbstractVariableNode> l, std::shared_ptr<Operation> op)
+    : value(std::forward<V>(val)), grad(), operation(std::move(op)), lhs(std::move(l)), rhs()
+{
+}
+
+template <typename T> template <typename V>
+VariableNode<T>::VariableNode(V&& val,
                               std::shared_ptr<const AbstractVariableNode> l,
                               std::shared_ptr<const AbstractVariableNode> r,
                               std::shared_ptr<Operation> op)
@@ -149,16 +158,16 @@ void VariableNode<T>::back_propagation() const
 }
 
 template <typename T>
-void VariableNode<T>::back_propagation(std::any df_val) const
+void VariableNode<T>::back_propagation(const std::any& df_val) const
 {
     if (this->grad)
-        this->grad = std::make_optional(this->grad.value() + std::any_cast<T>(df_val));
+        this->grad = std::make_optional(this->grad.value() + std::any_cast<const T&>(df_val));
     else
-        this->grad = std::make_optional(std::any_cast<T>(df_val));
+        this->grad = std::make_optional(std::any_cast<const T&>(df_val));
 
     if (this->operation && this->lhs && this->rhs)
     {
-        auto result = this->operation.get()->perform(std::any_cast<T>(df_val),
+        auto result = this->operation.get()->perform(df_val,
                                                      this->lhs->get_any_value(),
                                                      this->rhs->get_any_value());
         this->lhs->back_propagation(std::get<0>(result));
@@ -166,7 +175,7 @@ void VariableNode<T>::back_propagation(std::any df_val) const
     }
     else if (this->operation && this->lhs)
     {
-        auto result = this->operation.get()->perform(std::any_cast<T>(df_val), this->lhs->get_any_value(), std::any());
+        auto result = this->operation.get()->perform(df_val, this->lhs->get_any_value(), std::any());
         this->lhs->back_propagation(std::get<0>(result));
     }
 }
@@ -181,11 +190,7 @@ void VariableNode<T>::zero_grad() const
         this->rhs->zero_grad();
 }
 
-template <typename T>
-std::any VariableNode<T>::get_any_value() const
-{
-    return value;
-}
+
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const VariableNode<T> &variable)
@@ -200,7 +205,8 @@ template <typename T>
 class Variable
 {
 public:
-    explicit Variable(T value);
+    template <typename V>
+    explicit Variable(V&& value);
 
 private:
     explicit Variable(std::shared_ptr<VariableNode<T>> cn);
@@ -238,10 +244,14 @@ private:
     friend class Variable;
 };
 
+//------------------------------------------------- Deduction Guide ----------------------------------------------------
+
+template<typename V> Variable(V value) -> Variable<V>;
+
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
-template <typename T>
-Variable<T>::Variable(T value) : core_node(std::make_shared<VariableNode<T>>(value))
+template <typename T> template <typename V>
+Variable<T>::Variable(V&& value) : core_node(std::make_shared<VariableNode<T>>(std::forward<V>(value)))
 {
 }
 

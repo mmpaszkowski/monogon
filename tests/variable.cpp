@@ -192,7 +192,7 @@ TEST(variable, matrix_max)
 TEST(variable, matrix_avg)
 {
     Array a = {{1.0, 2.0}, {4.0, 5.0}, {7.0, 8.0}, {10.0, 11.0}};
-    Variable<Array<double>> A = Variable(a);
+    Variable<Array<double>> A = Variable<Array<double>>(a);
 
     Variable avg = A.avg();
     avg.back_propagation();

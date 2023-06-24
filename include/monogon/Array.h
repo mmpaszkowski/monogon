@@ -12,7 +12,7 @@
 #include <omp.h>
 #include <ostream>
 #include <valarray>
-
+#include <iostream>
 //---------------------------------------------------- Class body ------------------------------------------------------
 
 template <typename T = double>
@@ -91,26 +91,32 @@ public:
 template <typename T>
 Array<T>::Array() : data(), shape()
 {
+//    std::cout << "Array()" << std::endl;
 }
 
 template <typename T>
 Array<T>::Array(Shape sh) : data(sh.length()), shape(sh)
 {
-
+//    std::cout << "Array(Shape sh)" << std::endl;
 }
 
 template <typename T>
 Array<T>::Array(Shape sh, const T &value) : data(value, sh.length()), shape(sh)
 {
-
+//    std::cout << "Array(Shape sh, const T &value)" << std::endl;
 }
 
 template <typename T>
-Array<T>::~Array() = default;
+Array<T>::~Array()
+{
+//    std::cout << "~Array()" << std::endl;
+}
 
 template <typename T>
 Array<T>::Array(std::initializer_list<T> list) : shape({list.size()})
 {
+//    std::cout << "Array(std::initializer_list<T> list)" << std::endl;
+
     this->data.resize(list.size());
     size_t i = 0;
     for (const auto &item : list)
@@ -121,6 +127,8 @@ template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
     : shape({nasted_list.size(), nasted_list.begin()->size()})
 {
+//    std::cout << "Array(std::initializer_list<std::initializer_list<T>> nasted_list)" << std::endl;
+
     this->data.resize(this->shape(-2) * this->shape(-1));
     size_t i = 0;
     for (const auto &list : nasted_list)
@@ -132,6 +140,8 @@ template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_list<T>>> nasted_nasted_list)
     : shape({nasted_nasted_list.size(), nasted_nasted_list.begin()->size(), nasted_nasted_list.begin()->begin()->size()})
 {
+//    std::cout << "Array(std::initializer_list<T> list)" << std::endl;
+
     this->data.resize(nasted_nasted_list.size() * nasted_nasted_list.begin()->size() * nasted_nasted_list.begin()->begin()->size());
     size_t i = 0;
     for (auto nasted_list : nasted_nasted_list)
@@ -158,6 +168,8 @@ template <template <typename...> typename Container>
 Array<T>::Array(const Container<T> &container) : shape({container.size()})
 
 {
+//    std::cout << "Array(const Container<T> &container)" << std::endl;
+
     this->data.resize(this->shape(-1));
     size_t i = 0;
     for (const auto &item : container)
@@ -169,6 +181,8 @@ template <template <typename...> typename Container, template <typename...> type
 Array<T>::Array(const Container<NestedContainer<T>> &container)
     : shape({container.size(), container.begin()->size()})
 {
+//    std::cout << "Array(const Container<NestedContainer<T>> &container)" << std::endl;
+
     this->data.resize(this->shape(-2) * this->shape(-1));
 
     for (size_t i = 0, k = 0; i < container.size(); ++i)
@@ -180,17 +194,21 @@ Array<T>::Array(const Container<NestedContainer<T>> &container)
 template <typename T>
 Array<T>::Array(const Array<T> &rhs) : data(rhs.data), shape(rhs.shape)
 {
+//    std::cout << "Array(const Array<T> &rhs)" << std::endl;
 }
 
 template <typename T>
 Array<T>::Array(Array<T> &&rhs) noexcept
     : data(std::move(rhs.data)), shape(std::move(rhs.shape))
 {
+//    std::cout << "Array(Array<T> &&rhs)" << std::endl;
 }
 
 template <typename T>
 Array<T> &Array<T>::operator=(const Array<T> &rhs)
 {
+//    std::cout << "operator=(const Array<T> &rhs)" << std::endl;
+
     this->data = rhs.data;
     this->shape = rhs.shape;
     return *this;
@@ -199,6 +217,8 @@ Array<T> &Array<T>::operator=(const Array<T> &rhs)
 template <typename T>
 Array<T> &Array<T>::operator=(Array<T> &&rhs) noexcept
 {
+//    std::cout << "operator=(Array<T> &&rhs)" << std::endl;
+
     this->data = std::move(rhs.data);
     this->shape = std::move(rhs.shape);
     return *this;

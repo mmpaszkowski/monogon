@@ -73,9 +73,9 @@ struct AddOperation<T, Array<U>, Array<V>> : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        grad_type grad_val = std::any_cast<grad_type>(grad);
-        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+        const grad_type& grad_val = std::any_cast<const grad_type&>(grad);
+        const lhs_type& lhs_val = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const rhs_type& rhs_val = std::any_cast<std::reference_wrapper<const rhs_type>>(rhs).get();
 
         Array<U> l_result = Array<U>(Shape({lhs_val.get_shape()(-2), lhs_val.get_shape()(-1)}), 0.0);
         Array<V> r_result = Array<V>(Shape({rhs_val.get_shape()(-2), rhs_val.get_shape()(-1)}), 0.0);
@@ -99,7 +99,7 @@ struct AddOperation<T, Array<U>, Array<V>> : public Operation
                     l_result(i % l_result_rows, j % l_result_cols) + grad_val(i, j);
             }
         }
-        return std::tuple(l_result, r_result);
+        return std::tuple(std::move(l_result), std::move(r_result));
     }
 };
 
@@ -110,7 +110,7 @@ struct SubOperation : public Operation
 
     std::tuple<std::any, std::any> perform(const std::any &grad, const std::any &, const std::any &) const override
     {
-        return std::tuple(grad, -(std::any_cast<grad_type>(grad)));
+        return std::tuple(grad, -(std::any_cast<const grad_type&>(grad)));
     }
 };
 
@@ -125,9 +125,9 @@ struct MulOperation : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        grad_type grad_val = std::any_cast<grad_type>(grad);
-        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+        const grad_type& grad_val = std::any_cast<const grad_type&>(grad);
+        const lhs_type& lhs_val = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const rhs_type& rhs_val = std::any_cast<std::reference_wrapper<const rhs_type>>(rhs).get();
 
         return std::tuple(grad_val * rhs_val, grad_val * lhs_val);
     }
@@ -146,9 +146,9 @@ struct DivOperation : public Operation
     {
         Init<lhs_type> lhs_initializer;
 
-        grad_type grad_val = std::any_cast<grad_type>(grad);
-        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+        const grad_type& grad_val = std::any_cast<const grad_type&>(grad);
+        const lhs_type& lhs_val = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const rhs_type& rhs_val = std::any_cast<std::reference_wrapper<const rhs_type>>(rhs).get();
 
         return std::tuple(grad_val * (lhs_initializer.initialize(lhs_val, 1.0) / rhs_val),
                           grad_val * (-(lhs_val / (rhs_val * rhs_val))));
@@ -178,9 +178,9 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        grad_type grad_val = std::any_cast<grad_type>(grad);
-        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
+        const grad_type& grad_val = std::any_cast<const grad_type&>(grad);
+        const lhs_type& lhs_val = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const rhs_type& rhs_val = std::any_cast<std::reference_wrapper<const rhs_type>>(rhs).get();
 
         lhs_type l_result(Shape({grad_val.get_shape()(-2), rhs_val.get_shape()(-2)}));
         rhs_type r_result(Shape({lhs_val.get_shape()(-1), grad_val.get_shape()(-1)}));
@@ -198,7 +198,7 @@ struct DotOperation<T, Array<U>, Array<V>> : public Operation
                       &rhs_val(0, 0),
                       &l_result(0, 0));
 
-        return std::tuple(l_result, r_result);
+        return std::tuple(std::move(l_result), std::move(r_result));
     }
 };
 
@@ -216,9 +216,9 @@ struct MaxOperation<T, Array<U>, V> : public Operation
                                            const std::any &lhs,
                                            const std::any &rhs) const override
     {
-        lhs_type lhs_val = std::any_cast<lhs_type>(lhs);
-        rhs_type rhs_val = std::any_cast<rhs_type>(rhs);
-        grad_type grad_val = std::any_cast<grad_type>(grad);
+        const lhs_type& lhs_val = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const rhs_type& rhs_val = std::any_cast<std::reference_wrapper<const rhs_type>>(rhs).get();
+        const grad_type& grad_val = std::any_cast<const grad_type&>(grad);
 
         size_t l_val_rows = lhs_val.get_shape()(-2);
         size_t l_val_cols = lhs_val.get_shape()(-1);
@@ -244,14 +244,14 @@ struct AvgOperation<T, Array<U>> : public Operation
 
     std::tuple<std::any, std::any> perform(const std::any &grad, const std::any &lhs, const std::any &) const override
     {
-        lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
-        grad_type grad_value = std::any_cast<grad_type>(grad);
+        const lhs_type& lhs_value = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const grad_type& grad_value = std::any_cast<const grad_type&>(grad);
 
         Array<U> l_result = Array<U>(Shape({lhs_value.get_shape()(-2),
                                      lhs_value.get_shape()(-1)}),
                                      1.0 / static_cast<double>(lhs_value.get_shape()(-2) * lhs_value.get_shape()(-1))) *
                             grad_value;
-        return std::tuple(l_result, std::any());
+        return std::tuple(std::move(l_result), std::any());
     }
 };
 
@@ -266,11 +266,11 @@ struct ExpOperation<T, Array<U>> : public Operation
 
     std::tuple<std::any, std::any> perform(const std::any &grad, const std::any &lhs, const std::any &) const override
     {
-        lhs_type lhs_value = std::any_cast<lhs_type>(lhs);
-        grad_type grad_value = std::any_cast<grad_type>(grad);
+        const lhs_type& lhs_value = std::any_cast<std::reference_wrapper<const lhs_type>>(lhs).get();
+        const grad_type& grad_value = std::any_cast<const grad_type&>(grad);
 
         Array<U> l_result = lhs_value.exp() * grad_value;
-        return std::tuple(l_result, std::any());
+        return std::tuple(std::move(l_result), std::any());
     }
 };
 

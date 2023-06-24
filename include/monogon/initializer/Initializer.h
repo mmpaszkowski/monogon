@@ -55,7 +55,7 @@ Variable<Array<T>> GlorotUniform<T>::operator()(std::size_t rows, std::size_t co
         for (size_t j = 0; j < cols; j++)
             result(i, j) = dis(gen);
 
-    return Variable(result);
+    return Variable(std::move(result));
 }
 
 template <typename T = double>
@@ -69,7 +69,7 @@ template <typename T>
 Variable<Array<T>> Ones<T>::operator()(std::size_t rows, std::size_t cols) const
 {
     Array<T> result(Shape({rows, cols}), 1.0);
-    return Variable(result);
+    return Variable(std::move(result));
 }
 
 
@@ -84,7 +84,7 @@ template <typename T>
 Variable<Array<T>> Zeros<T>::operator()(std::size_t rows, std::size_t cols) const
 {
     Array<T> result(Shape({rows, cols}), 0.0);
-    return Variable(result);
+    return Variable(std::move(result));
 }
 
 #endif //MONOGON_INITIALIZER_H

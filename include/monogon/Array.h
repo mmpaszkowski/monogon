@@ -44,14 +44,14 @@ public:
     Array<T> &operator=(Array<T> &&) noexcept;
 
 public:
-    value_type &operator()(std::size_t idx);
-    const value_type &operator()(std::size_t idx) const;
+    inline value_type &operator()(std::size_t idx);
+    inline const value_type &operator()(std::size_t idx) const;
 
-    value_type &operator()(std::size_t row, std::size_t column);
-    const value_type &operator()(std::size_t row, std::size_t column) const;
+    inline value_type &operator()(std::size_t row, std::size_t column);
+    inline const value_type &operator()(std::size_t row, std::size_t column) const;
 
-    value_type &operator()(const Index& idx);
-    const value_type &operator()(const Index& idx) const;
+    inline value_type &operator()(const Index& idx);
+    inline const value_type &operator()(const Index& idx) const;
 
     auto operator-() const;
     template <typename U> auto operator+(const Array<U> &rhs) const;
@@ -81,6 +81,7 @@ public:
 private:
     std::valarray<value_type> data;
     Shape shape;
+    size_t last_shape;
 public:
     template <typename U>
     friend std::ostream &operator<<(std::ostream &os, const Array<U> &variable);
@@ -89,19 +90,19 @@ public:
 //--------------------------------------------------- Constructors -----------------------------------------------------
 
 template <typename T>
-Array<T>::Array() : data(), shape()
+Array<T>::Array() : data(), shape(), last_shape()
 {
 //    std::cout << "Array()" << std::endl;
 }
 
 template <typename T>
-Array<T>::Array(Shape sh) : data(sh.length()), shape(sh)
+Array<T>::Array(Shape sh) : data(sh.length()), shape(sh), last_shape(sh(-1))
 {
 //    std::cout << "Array(Shape sh)" << std::endl;
 }
 
 template <typename T>
-Array<T>::Array(Shape sh, const T &value) : data(value, sh.length()), shape(sh)
+Array<T>::Array(Shape sh, const T &value) : data(value, sh.length()), shape(sh), last_shape(sh(-1))
 {
 //    std::cout << "Array(Shape sh, const T &value)" << std::endl;
 }
@@ -113,7 +114,7 @@ Array<T>::~Array()
 }
 
 template <typename T>
-Array<T>::Array(std::initializer_list<T> list) : shape({list.size()})
+Array<T>::Array(std::initializer_list<T> list) : shape({list.size()}), last_shape(list.size())
 {
 //    std::cout << "Array(std::initializer_list<T> list)" << std::endl;
 
@@ -125,7 +126,7 @@ Array<T>::Array(std::initializer_list<T> list) : shape({list.size()})
 
 template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
-    : shape({nasted_list.size(), nasted_list.begin()->size()})
+    : shape({nasted_list.size(), nasted_list.begin()->size()}), last_shape(nasted_list.begin()->size())
 {
 //    std::cout << "Array(std::initializer_list<std::initializer_list<T>> nasted_list)" << std::endl;
 
@@ -138,7 +139,7 @@ Array<T>::Array(std::initializer_list<std::initializer_list<T>> nasted_list)
 
 template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_list<T>>> nasted_nasted_list)
-    : shape({nasted_nasted_list.size(), nasted_nasted_list.begin()->size(), nasted_nasted_list.begin()->begin()->size()})
+    : shape({nasted_nasted_list.size(), nasted_nasted_list.begin()->size(), nasted_nasted_list.begin()->begin()->size()}), last_shape(nasted_nasted_list.begin()->begin()->size())
 {
 //    std::cout << "Array(std::initializer_list<T> list)" << std::endl;
 
@@ -152,7 +153,7 @@ Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_lis
 
 template <typename T>
 Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_list<std::initializer_list<T>>>> nasted_nasted_nasted_list)
-    : shape({nasted_nasted_nasted_list.size(), nasted_nasted_nasted_list.begin()->size(), nasted_nasted_nasted_list.begin()->begin()->size(), nasted_nasted_nasted_list.begin()->begin()->begin()->size()})
+    : shape({nasted_nasted_nasted_list.size(), nasted_nasted_nasted_list.begin()->size(), nasted_nasted_nasted_list.begin()->begin()->size(), nasted_nasted_nasted_list.begin()->begin()->begin()->size()}), last_shape(nasted_nasted_nasted_list.begin()->begin()->begin()->size())
 {
     this->data.resize(nasted_nasted_nasted_list.size() * nasted_nasted_nasted_list.begin()->size() * nasted_nasted_nasted_list.begin()->begin()->size() * nasted_nasted_nasted_list.begin()->begin()->begin()->size());
     size_t i = 0;
@@ -165,8 +166,7 @@ Array<T>::Array(std::initializer_list<std::initializer_list<std::initializer_lis
 
 template <typename T>
 template <template <typename...> typename Container>
-Array<T>::Array(const Container<T> &container) : shape({container.size()})
-
+Array<T>::Array(const Container<T> &container) : shape({container.size()}), last_shape(container.size())
 {
 //    std::cout << "Array(const Container<T> &container)" << std::endl;
 
@@ -179,7 +179,7 @@ Array<T>::Array(const Container<T> &container) : shape({container.size()})
 template <typename T>
 template <template <typename...> typename Container, template <typename...> typename NestedContainer>
 Array<T>::Array(const Container<NestedContainer<T>> &container)
-    : shape({container.size(), container.begin()->size()})
+    : shape({container.size(), container.begin()->size()}), last_shape(container.begin()->size())
 {
 //    std::cout << "Array(const Container<NestedContainer<T>> &container)" << std::endl;
 
@@ -192,14 +192,14 @@ Array<T>::Array(const Container<NestedContainer<T>> &container)
 
 
 template <typename T>
-Array<T>::Array(const Array<T> &rhs) : data(rhs.data), shape(rhs.shape)
+Array<T>::Array(const Array<T> &rhs) : data(rhs.data), shape(rhs.shape), last_shape(rhs.last_shape)
 {
 //    std::cout << "Array(const Array<T> &rhs)" << std::endl;
 }
 
 template <typename T>
 Array<T>::Array(Array<T> &&rhs) noexcept
-    : data(std::move(rhs.data)), shape(std::move(rhs.shape))
+    : data(std::move(rhs.data)), shape(std::move(rhs.shape)), last_shape(rhs.last_shape)
 {
 //    std::cout << "Array(Array<T> &&rhs)" << std::endl;
 }
@@ -211,6 +211,7 @@ Array<T> &Array<T>::operator=(const Array<T> &rhs)
 
     this->data = rhs.data;
     this->shape = rhs.shape;
+    this->last_shape = rhs.last_shape;
     return *this;
 }
 
@@ -221,37 +222,38 @@ Array<T> &Array<T>::operator=(Array<T> &&rhs) noexcept
 
     this->data = std::move(rhs.data);
     this->shape = std::move(rhs.shape);
+    this->last_shape = rhs.last_shape;
     return *this;
 }
 
 //----------------------------------------------------- Operators ------------------------------------------------------
 
 template <typename T>
-T &Array<T>::operator()(std::size_t idx)
+inline T &Array<T>::operator()(std::size_t idx)
 {
     return this->data[idx];
 }
 
 template <typename T>
-const T &Array<T>::operator()(std::size_t idx) const
+inline const T &Array<T>::operator()(std::size_t idx) const
 {
     return this->data[idx];
 }
 
 template <typename T>
-T &Array<T>::operator()(std::size_t row, std::size_t column)
+inline T &Array<T>::operator()(std::size_t row, std::size_t column)
 {
-    return data[row * shape(-1) + column];
+    return data[row * this->last_shape + column];
 }
 
 template <typename T>
-const T &Array<T>::operator()(std::size_t row, std::size_t column) const
+inline const T &Array<T>::operator()(std::size_t row, std::size_t column) const
 {
-    return data[row * shape(-1) + column];
+    return data[row * this->last_shape + column];
 }
 
 template <typename T>
-T &Array<T>::operator()(const Index &index)
+inline T &Array<T>::operator()(const Index &index)
 {
     size_t result_index = index[0];
     for (size_t i = 1; i < index.size(); i++)
@@ -261,7 +263,7 @@ T &Array<T>::operator()(const Index &index)
 }
 
 template <typename T>
-const T &Array<T>::operator()(const Index &index) const
+inline const T &Array<T>::operator()(const Index &index) const
 {
     size_t result_index = index[0];
     for (size_t i = 1; i < index.size(); i++)

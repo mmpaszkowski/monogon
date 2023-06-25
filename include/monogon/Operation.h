@@ -93,10 +93,8 @@ struct AddOperation<T, Array<U>, Array<V>> : public Operation
         {
             for (size_t j = 0; j < g_cols; j++)
             {
-                r_result(i % r_result_rows, j % r_result_cols) =
-                    r_result(i % r_result_rows, j % r_result_cols) + grad_val(i, j);
-                l_result(i % l_result_rows, j % l_result_cols) =
-                    l_result(i % l_result_rows, j % l_result_cols) + grad_val(i, j);
+                l_result(i % l_result_rows, j % l_result_cols) += grad_val(i, j);
+                r_result(i % r_result_rows, j % r_result_cols) += grad_val(i, j);
             }
         }
         return std::tuple(std::move(l_result), std::move(r_result));
